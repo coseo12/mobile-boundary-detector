@@ -1,8 +1,10 @@
 import { defineStore } from "pinia";
 
 interface State {
-  isLoading: boolean;
   model: any[];
+  flashMode: "auto" | "off" | "flash";
+  isLoading: boolean;
+  isFlash: boolean;
 }
 
 export const useStore = defineStore("common", {
@@ -10,8 +12,10 @@ export const useStore = defineStore("common", {
   state: (): State => {
     return {
       // all these properties will have their type inferred automatically
-      isLoading: true,
       model: [],
+      flashMode: "off",
+      isLoading: true,
+      isFlash: false,
     };
   },
 });

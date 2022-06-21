@@ -29,8 +29,8 @@ onLoadedModel();
 @import "@/scss/_global.scss";
 
 main {
+  max-width: 512px;
   width: 100%;
-  height: 100%;
-  background-color: lightcoral;
+  height: 100vh;
 }
 </style>
