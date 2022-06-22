@@ -63,9 +63,24 @@ body {
   width: 100%;
   height: 100%;
   margin: 0;
+}
 
-  a {
-    text-decoration: none;
-    color: $d4;
-  }
+a {
+  text-decoration: none;
+  color: $d4;
+}
+
+button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  outline: none;
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+}
+
+button:active {
+  color: #f34a00;
 }

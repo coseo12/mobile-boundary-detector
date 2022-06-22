@@ -1,7 +1,67 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { ref } from "vue";
+import RoundBtn from "@/components/common/RoundBtn.vue";
+
+const fileEl = ref<HTMLInputElement | null>(null);
+
+const onUpload = () => {
+  if (!fileEl.value) {
+    return;
+  }
+  fileEl.value.click();
+};
+
+const onChange = (e: Event) => {
+  const el = e.target as HTMLInputElement;
+  if (!el) {
+    return;
+  }
+
+  const files = el.files;
+  if (!files) {
+    return;
+  }
+
+  for (let i = 0; i < files.length; i++) {}
+};
+</script>
 
 <template>
-  <article></article>
+  <article aria-label="bottom button wrapper" class="bottom-btn">
+    <RoundBtn icons="upload" @mouseup="onUpload" />
+    <button class="r0"></button>
+    <RoundBtn icons="none" />
+    <input
+      ref="fileEl"
+      type="file"
+      accept="image/png, image/jpeg, image/jpg"
+      multiple
+      @change="onChange"
+    />
+  </article>
 </template>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.bottom-btn {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 0 30px;
+
+  .r0 {
+    width: 70px;
+    height: 70px;
+    border: 5px solid #555555;
+    border-radius: 50%;
+    background-color: #e0e0e0;
+
+    &:active {
+      background-color: $lomin-deep-orange;
+    }
+  }
+
+  input {
+    display: none;
+  }
+}
+</style>

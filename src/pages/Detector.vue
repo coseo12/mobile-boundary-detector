@@ -29,7 +29,7 @@ import BottomBtn from "@/components/detector/BottomBtn.vue";
   }
   .camera-wrap {
     height: 80vh;
-    background-color: $point-gray1;
+    background-color: $lomin-deep-black;
   }
 
   .bottom-btn-wrap {
