@@ -6,8 +6,8 @@ const router = useRouter();
 
 const onDocuments = (id: string) => {
   router.push({
-    name: constants.documents.name,
-    query: {
+    name: constants.edit.name,
+    params: {
       id,
     },
   });
@@ -16,7 +16,7 @@ const onDocuments = (id: string) => {
 
 <template>
   <div class="preview-wrap">
-    <div v-for="(img, idx) in 10" class="card" @mouseup="onDocuments('test?')">
+    <div v-for="(img, idx) in 10" class="card" @mouseup="onDocuments('test')">
       <div class="badge">{{ idx + 1 }}</div>
       <img src="@/assets/doc_test017.jpg" alt="img-1" />
     </div>
@@ -25,9 +25,6 @@ const onDocuments = (id: string) => {
 
 <style lang="scss" scoped>
 .preview-wrap {
-  position: absolute;
-  left: 0;
-  bottom: -10px;
   width: 100%;
   height: 100px;
   overflow-x: scroll;

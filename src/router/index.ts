@@ -8,12 +8,14 @@ export const router = createRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
-  const store = useStore();
-  if (store.isLoading && to.name !== "loading") {
-    next("/loading");
-  } else {
-    next();
-  }
+  next();
+
+  // const store = useStore();
+  // if (store.isLoading && to.name !== "loading") {
+  //   next("/loading");
+  // } else {
+  //   next();
+  // }
 });
 
 export { constants };

@@ -1,7 +1,37 @@
-<script setup leng="ts"></script>
+<script setup leng="ts">
+import Preview from "@/components/common/Preview.vue";
+import BottomBtn from "@/components/edit/BottomBtn.vue";
+import ImageView from "@/components/edit/ImageView.vue";
+</script>
 
 <template>
-  <section aria-label="Edit">Edit</section>
+  <section aria-label="Edit" class="edit">
+    <ImageView class="top" />
+    <Preview class="middle" />
+    <BottomBtn class="bottom" />
+  </section>
 </template>
 
-<script lang="scss" scoped></script>
+<style lang="scss" scoped>
+.edit {
+  width: 100%;
+  height: 100%;
+  background-color: $lomin-deep-black;
+  display: flex;
+  flex-direction: column;
+
+  .top {
+    height: calc(100% - 160px);
+  }
+
+  .middle {
+    position: relative;
+    bottom: -10px;
+  }
+
+  .bottom {
+    width: 100%;
+    height: 60px;
+  }
+}
+</style>

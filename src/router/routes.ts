@@ -1,6 +1,7 @@
 import Loading from "@/pages/Loading.vue";
 import Detector from "@/pages/Detector.vue";
 import Edit from "@/pages/Edit.vue";
+import Resize from "@/pages/Resize.vue";
 import Documents from "@/pages/Documents.vue";
 import Error from "@/pages/Error.vue";
 
@@ -19,6 +20,11 @@ export const constants = {
     path: "/edit/:id",
     name: "edit",
     component: Edit,
+  },
+  resize: {
+    path: "/resize/:id",
+    name: "resize",
+    component: Resize,
   },
   documents: {
     path: "/documents",
@@ -48,6 +54,11 @@ export const routes = [
     path: constants.edit.path,
     name: constants.edit.name,
     component: constants.edit.component,
+  },
+  {
+    path: constants.resize.path,
+    name: constants.resize.name,
+    component: constants.resize.component,
   },
   {
     path: constants.documents.path,
