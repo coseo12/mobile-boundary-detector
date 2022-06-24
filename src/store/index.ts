@@ -1,15 +1,21 @@
 import { defineStore } from "pinia";
 
 type DialogType = "alert" | "confirm";
+
+export interface Square {
+  cx: number;
+  cy: number;
+  lines: { dx: number; dy: number }[];
+}
 interface Document {
   id: string;
   img: HTMLImageElement;
-  square: number[][];
-  paths: Path2D[];
+  square: Square;
+  circlePath: Path2D[];
+  fitPath: Path2D[];
 }
 
 interface State {
-  model: any[];
   documents: Document[];
   flashMode: "auto" | "off" | "flash";
   dialogText: string[];
@@ -27,7 +33,6 @@ export const useStore = defineStore("common", {
   state: (): State => {
     return {
       // all these properties will have their type inferred automatically
-      model: [],
       documents: [],
       dialogText: [],
       dialogLabels: [],

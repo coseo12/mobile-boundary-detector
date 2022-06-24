@@ -1,8 +1,8 @@
 // tensorflowJS
 export function inference_tfjs(image, tfjsModel) {
   // 320 * 320 size 로 input을 받던가 320 * 320 size로 resize 해야함
-
   let input = tf.expandDims(image);
+
   input = input.toFloat();
 
   let outputTensor = tfjsModel.predict(input);

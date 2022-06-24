@@ -1,29 +1,54 @@
 <script setup lang="ts">
+import { onMounted } from "vue";
 import DialogProvider from "@/components/providers/DialogProvider.vue";
-import { getModel } from "@/utils";
 import { useStore } from "@/store";
 import { storeToRefs } from "pinia";
 import { useRouter } from "vue-router";
 import { constants } from "@/router";
+import { setModel, getSquare, drawDetectLines } from "@/utils";
+
+import img1 from "@/assets/doc_test017.jpg";
 
 const store = useStore();
 const router = useRouter();
-const { isLoading, model } = storeToRefs(store);
+const { isLoading } = storeToRefs(store);
 
 const onLoadedModel = async () => {
-  model.value = await getModel();
+  await setModel();
   isLoading.value = false;
   router.push(constants.detector.path);
-};
-// onLoadedModel();
 
-// setTimeout(() => {
-//   store.onDialog(
-//     "confirm",
-//     ["삭제된파일은 복구할 수 없습니다.", "정말 삭제하시겠습니까?"],
-//     ["취소", "삭제"]
-//   );
-// }, 1000);
+  callback();
+};
+onLoadedModel();
+
+const callback = () => {
+  const img = document.createElement("img");
+  img.src = img1;
+  img.onload = async () => {
+    const width = img.naturalWidth;
+    const height = img.naturalHeight;
+    const square = await getSquare(img);
+
+    if (!square) {
+      return;
+    }
+
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d")!;
+
+    canvas.width = 320;
+    canvas.height = 320;
+
+    ctx.drawImage(img, 0, 0, 320, 320);
+    drawDetectLines(ctx, square, {
+      xRatio: 320 / width,
+      yRatio: 320 / height,
+    });
+    document.body.appendChild(canvas);
+    console.log(square);
+  };
+};
 </script>
 
 <template>
