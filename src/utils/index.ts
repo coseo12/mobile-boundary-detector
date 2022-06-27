@@ -14,6 +14,8 @@ interface Options {
 }
 
 let model: any[] = [];
+let isCircles: boolean = false;
+let isFit: boolean = false;
 
 const colorSet = {
   orange: "#f34a00",
@@ -81,21 +83,111 @@ export const drawDetectLines = async (
   ctx.restore();
 };
 
-export const getDetectCirclePath = async (
-  square: Square,
-  options: Options
-) => {};
+export const getDetectCirclePath = (square: Square, options: Options) => {
+  const xRatio = options?.xRatio || 1;
+  const yRatio = options?.yRatio || 1;
+  const round = 8;
+  const deg = 2 * Math.PI;
+  const path = [];
+  const circle = new Path2D();
+  circle.arc(square.cx * xRatio, square.cy * yRatio, round, 0, deg);
+  path.push(circle);
 
-export const getDetectFitPath = async (square: Square, options: Options) => {};
+  for (const l of square.lines) {
+    const circle = new Path2D();
+    circle.arc(l.dx * xRatio, l.dy * yRatio, round, 0, deg);
+    path.push(circle);
+  }
+  return path;
+};
+
+const getPosition = (
+  startX: number,
+  endX: number,
+  startY: number,
+  endY: number
+) => {
+  let cx = 0;
+  let cy = 0;
+  let x = 0;
+  let y = 0;
+
+  if (startX <= endX && startY <= endY) {
+    cx = startX + Math.abs(startX - endX) / 1.6;
+    cy = startY + Math.abs(startY - endY) / 1.6;
+    x = startX + Math.abs(startX - endX) / 2.4;
+    y = startY + Math.abs(startY - endY) / 2.4;
+  } else if (startX >= endX && startY <= endY) {
+    cx = endX + Math.abs(startX - endX) / 2.4;
+    cy = startY + Math.abs(startY - endY) / 1.6;
+    x = endX + Math.abs(startX - endX) / 1.6;
+    y = startY + Math.abs(startY - endY) / 2.4;
+  } else if (startX <= endX && startY >= endY) {
+    cx = startX + Math.abs(startX - endX) / 2.4;
+    cy = endY + Math.abs(startY - endY) / 1.6;
+    x = startX + Math.abs(startX - endX) / 1.6;
+    y = endY + Math.abs(startY - endY) / 2.4;
+  } else if (startX >= endX && startY >= endY) {
+    cx = endX + Math.abs(startX - endX) / 1.6;
+    cy = endY + Math.abs(startY - endY) / 1.6;
+    x = endX + Math.abs(startX - endX) / 2.4;
+    y = endY + Math.abs(startY - endY) / 2.4;
+  }
+  return { cx, cy, x, y };
+};
+
+export const getDetectFitPath = async (square: Square, options: Options) => {
+  const xRatio = options?.xRatio || 1;
+  const yRatio = options?.yRatio || 1;
+  const path = [];
+  let startX = square.cx * xRatio;
+  let startY = square.cy * yRatio;
+  let endX = 0;
+  let endY = 0;
+
+  for (const [_, v] of Object.entries(square.lines)) {
+    endX = v.dx * xRatio;
+    endY = v.dy * yRatio;
+
+    const { cx, cy, x, y } = getPosition(startX, endX, startY, endY);
+
+    const fit = new Path2D();
+    fit.moveTo(cx, cy);
+    fit.lineTo(x, y);
+    path.push(fit);
+
+    startX = endX;
+    startY = endY;
+  }
+  endX = square.cx * xRatio;
+  endY = square.cy * yRatio;
+
+  const { cx, cy, x, y } = getPosition(startX, endX, startY, endY);
+  const fit = new Path2D();
+  fit.moveTo(cx, cy);
+  fit.lineTo(x, y);
+  path.push(fit);
+
+  return path;
+};
 
 export const drawPath = async (
   ctx: CanvasRenderingContext2D,
-  paths: Path2D[]
+  paths: Path2D[],
+  type: "circle" | "line" = "circle"
 ) => {
   ctx.save();
-  ctx.fillStyle = colorSet.orange;
-  for (const p of paths) {
-    ctx.fill(p);
+  if (type === "circle") {
+    ctx.fillStyle = colorSet.orange;
+    for (const p of paths) {
+      ctx.fill(p);
+    }
+  } else {
+    ctx.strokeStyle = colorSet.orange;
+    ctx.lineWidth = 5;
+    for (const p of paths) {
+      ctx.stroke(p);
+    }
   }
   ctx.restore();
 };
