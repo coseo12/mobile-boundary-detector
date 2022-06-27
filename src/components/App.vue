@@ -1,25 +1,13 @@
 <script setup lang="ts">
-import { onMounted } from "vue";
+import ToastProvider from "@/components/providers/ToastProvider.vue";
 import DialogProvider from "@/components/providers/DialogProvider.vue";
 import { useStore } from "@/store";
 import { storeToRefs } from "pinia";
 import { useRouter } from "vue-router";
 import { constants } from "@/router";
-import {
-  setModel,
-  getSquare,
-  drawDetectLines,
-  drawPath,
-  getDetectCirclePath,
-  getDetectFitPath,
-} from "@/utils";
+import { setModel, setCanvasTEST, getImgRotate } from "@/utils";
 
 import img1 from "@/assets/doc_test017.jpg";
-import img2 from "@/assets/doc_test019.jpg";
-import img3 from "@/assets/doc_test056.jpg";
-import img4 from "@/assets/doc_test060.jpg";
-import img5 from "@/assets/doc_test063.jpg";
-import img6 from "@/assets/doc_test068.jpg";
 
 const store = useStore();
 const router = useRouter();
@@ -35,63 +23,28 @@ const onLoadedModel = async () => {
 onLoadedModel();
 
 const callback = () => {
-  setCanvas(img1);
-  setCanvas(img2);
-  setCanvas(img3);
-  setCanvas(img4);
-  setCanvas(img5);
-  setCanvas(img6);
-};
-
-const setCanvas = (src: string) => {
-  const img = document.createElement("img");
-  img.src = src;
-  img.onload = async () => {
-    const width = img.naturalWidth;
-    const height = img.naturalHeight;
-    const square = await getSquare(img);
-
-    if (!square) {
-      return;
-    }
-
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d")!;
-
-    canvas.width = 320;
-    canvas.height = 320;
-
-    ctx.drawImage(img, 0, 0, 320, 320);
-    drawDetectLines(ctx, square, {
-      xRatio: 320 / width,
-      yRatio: 320 / height,
-    });
-    drawPath(
-      ctx,
-      getDetectCirclePath(square, {
-        xRatio: 320 / width,
-        yRatio: 320 / height,
-      })
-    );
-
-    drawPath(
-      ctx,
-      await getDetectFitPath(square, {
-        xRatio: 320 / width,
-        yRatio: 320 / height,
-      }),
-      "line"
-    );
-    document.body.appendChild(canvas);
+  const i = new Image();
+  i.src = img1;
+  i.onload = () => {
+    const img = getImgRotate(i);
+    // document.body.appendChild(img);
   };
+  // setCanvasTEST(img1);
+  // setCanvasTEST(img2);
+  // setCanvasTEST(img3);
+  // setCanvasTEST(img4);
+  // setCanvasTEST(img5);
+  // setCanvasTEST(img6);
 };
 </script>
 
 <template>
   <main>
-    <DialogProvider>
-      <router-view></router-view>
-    </DialogProvider>
+    <ToastProvider>
+      <DialogProvider>
+        <router-view></router-view>
+      </DialogProvider>
+    </ToastProvider>
   </main>
 </template>
 
@@ -100,6 +53,7 @@ const setCanvas = (src: string) => {
 @import "@/scss/_global.scss";
 
 main {
+  position: relative;
   max-width: 512px;
   width: 100%;
   height: 100vh;

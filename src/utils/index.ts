@@ -191,3 +191,89 @@ export const drawPath = async (
   }
   ctx.restore();
 };
+
+export const getImgRotate = (img: HTMLImageElement) => {
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d")!;
+  canvas.width = img.naturalHeight;
+  canvas.height = img.naturalWidth;
+  ctx.rotate((90 * Math.PI) / 180);
+  ctx.drawImage(img, 0, canvas.width * -1);
+
+  const imgEl = new Image();
+  imgEl.src = canvas.toDataURL("image/png");
+  return imgEl;
+};
+
+const setRotate = (
+  ctx: CanvasRenderingContext2D,
+  width: number,
+  height: number
+) => {
+  const tx = width / 2;
+  const ty = height / 2;
+  ctx.translate(tx, ty);
+  ctx.rotate((90 * Math.PI) / 180);
+  ctx.translate(-tx, -ty);
+};
+
+export const setCanvasTEST = (src: string) => {
+  const img = document.createElement("img");
+  img.src = src;
+  img.onload = async () => {
+    const width = img.naturalWidth;
+    const height = img.naturalHeight;
+    const square = await getSquare(img);
+
+    if (!square) {
+      return;
+    }
+
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d")!;
+
+    canvas.width = 320;
+    canvas.height = 320;
+
+    ctx.drawImage(img, 0, 0, 320, 320);
+    drawDetectLines(ctx, square, {
+      xRatio: 320 / width,
+      yRatio: 320 / height,
+    });
+    drawPath(
+      ctx,
+      getDetectCirclePath(square, {
+        xRatio: 320 / width,
+        yRatio: 320 / height,
+      })
+    );
+
+    drawPath(
+      ctx,
+      await getDetectFitPath(square, {
+        xRatio: 320 / width,
+        yRatio: 320 / height,
+      }),
+      "line"
+    );
+
+    document.body.appendChild(canvas);
+  };
+};
+
+export const setCanvasRotate = (src: string) => {
+  // translate to center-canvas
+  // the origin [0,0] is now center-canvas
+  //TODO: TEST
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d")!;
+  const img = document.createElement("img");
+  img.src = src;
+  img.onload = async () => {
+    canvas.width = img.naturalHeight;
+    canvas.height = img.naturalWidth;
+    ctx.rotate((90 * Math.PI) / 180);
+    ctx.drawImage(img, 0, canvas.width * -1);
+  };
+  document.body.appendChild(canvas);
+};

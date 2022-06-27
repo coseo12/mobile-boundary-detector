@@ -19,7 +19,6 @@ const onClose = () => {
   if (!modal.value) {
     return;
   }
-  console.log(modal.value);
   isDialog.value = false;
   modal.value.close();
 };

@@ -23,9 +23,11 @@ interface State {
   dialogLabels: string[];
   dialogConfirmCallback: Function | null;
   dialogCancelCallback: Function | null;
+  toastMsg: string;
   isDialog: boolean;
   isLoading: boolean;
   isFlash: boolean;
+  isToast: boolean;
 }
 
 export const useStore = defineStore("common", {
@@ -39,10 +41,12 @@ export const useStore = defineStore("common", {
       dialogType: "alert",
       dialogConfirmCallback: null,
       dialogCancelCallback: null,
+      toastMsg: "",
       flashMode: "off",
       isLoading: true,
       isFlash: false,
       isDialog: false,
+      isToast: false,
     };
   },
   actions: {
@@ -59,6 +63,13 @@ export const useStore = defineStore("common", {
       this.dialogConfirmCallback = confirmCallback || null;
       this.dialogCancelCallback = cancelCallback || null;
       this.isDialog = true;
+    },
+    onToast(msg: string) {
+      this.toastMsg = msg;
+      this.isToast = true;
+      setTimeout(() => {
+        this.isToast = false;
+      }, 2000);
     },
   },
 });
