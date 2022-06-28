@@ -24,6 +24,9 @@ interface State {
   dialogConfirmCallback: Function | null;
   dialogCancelCallback: Function | null;
   toastMsg: string;
+  cameraWidth: number;
+  cameraHeight: number;
+  video: HTMLVideoElement | null;
   isDialog: boolean;
   isLoading: boolean;
   isFlash: boolean;
@@ -43,6 +46,9 @@ export const useStore = defineStore("common", {
       dialogCancelCallback: null,
       toastMsg: "",
       flashMode: "off",
+      cameraWidth: 0,
+      cameraHeight: 0,
+      video: null,
       isLoading: true,
       isFlash: false,
       isDialog: false,
@@ -70,6 +76,25 @@ export const useStore = defineStore("common", {
       setTimeout(() => {
         this.isToast = false;
       }, 2000);
+    },
+
+    async capture(callback: Function) {
+      if (!this.video) {
+        return;
+      }
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d")!;
+      canvas.width = this.cameraWidth;
+      canvas.height = this.cameraHeight;
+
+      ctx.drawImage(this.video, 0, 0, this.cameraWidth, this.cameraHeight);
+
+      const dataUrl = await canvas.toDataURL();
+      const imgEl = new Image();
+      imgEl.src = dataUrl;
+      imgEl.onload = async () => {
+        callback();
+      };
     },
   },
 });

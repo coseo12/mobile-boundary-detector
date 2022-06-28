@@ -3,13 +3,16 @@ import { ref, onMounted, onUnmounted } from "vue";
 import Copyright from "@/components/common/Copyright.vue";
 import Preview from "@/components/common/Preview.vue";
 import { useStore } from "@/store";
-// import { storeToRefs } from "pinia";
-// import {} from "@/utils";
+import { storeToRefs } from "pinia";
+import {
+  getSquare,
+  getDetectCirclePath,
+  drawDetectLines,
+  drawPath,
+} from "@/utils";
 
 let RECT_WIDTH = 0;
 let RECT_HEIGHT = 0;
-let CAMERA_WIDTH = 0;
-let CAMERA_HEIGHT = 0;
 let ANIMATIONFRAME = null;
 let IS_DETECT = false;
 
@@ -18,9 +21,9 @@ const VIDEO_HEIGHT = 2160;
 const IS_MOBILE = navigator.userAgent.toLocaleLowerCase().includes("mobile");
 
 const store = useStore();
+const { video, cameraHeight, cameraWidth } = storeToRefs(store);
 
 const stream = ref<MediaStream | null>(null);
-const video = ref<HTMLVideoElement | null>(null);
 const canvas = ref<HTMLCanvasElement | null>(null);
 const wrapper = ref<HTMLElement | null>(null);
 
@@ -58,28 +61,11 @@ const getStream = async () => {
     });
   } catch (error) {
     console.log(error);
-    store.onToast("카메라 정보를 가져올 수 없습니다.");
+    store.onDialog("alert", [
+      "텍스트스코프 자동 인식 기능 이용을 위해서는",
+      "카메라 엑세스 권한이필요합니다.",
+    ]);
   }
-};
-
-const animate = async (t = 0) => {
-  if (!video.value) {
-    return;
-  }
-  const canvas = document.createElement("canvas");
-  const ctx = canvas.getContext("2d")!;
-  canvas.width = CAMERA_WIDTH;
-  canvas.height = CAMERA_HEIGHT;
-
-  ctx.drawImage(video.value, 0, 0, CAMERA_WIDTH, VIDEO_HEIGHT);
-
-  const dataUrl = await canvas.toDataURL();
-  const imgEl = new Image();
-  imgEl.src = dataUrl;
-  imgEl.onload = async () => {
-    console.log("img loaded", imgEl.naturalWidth, imgEl.naturalHeight);
-    document.body.appendChild(imgEl);
-  };
 };
 
 const setBoundingClientRect = () => {
@@ -90,19 +76,14 @@ const setBoundingClientRect = () => {
   const videoRect = video.value.getBoundingClientRect();
   RECT_WIDTH = rect.width;
   RECT_HEIGHT = rect.height;
-  CAMERA_WIDTH = videoRect.width;
-  CAMERA_HEIGHT = videoRect.height;
+  cameraWidth.value = videoRect.width;
+  cameraHeight.value = videoRect.height;
 
   video.value.width = RECT_WIDTH;
 };
 
 onMounted(async () => {
-  await getStream();
-  // await setBoundingClientRect();
-
-  setTimeout(() => {
-    animate();
-  }, 3000);
+  // await getStream();
 });
 
 onUnmounted(() => {

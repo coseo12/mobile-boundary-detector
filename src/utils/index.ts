@@ -205,7 +205,7 @@ export const getImgRotate = (img: HTMLImageElement) => {
   return imgEl;
 };
 
-const setRotate = (
+export const setRotate = (
   ctx: CanvasRenderingContext2D,
   width: number,
   height: number
