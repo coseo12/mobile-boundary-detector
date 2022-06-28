@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { useRouter } from "vue-router";
 import { constants } from "@/router";
+import { useStore } from "@/store";
+import { storeToRefs } from "pinia";
+const store = useStore();
+const { documents } = storeToRefs(store);
 
 const router = useRouter();
 
@@ -9,6 +13,8 @@ const onDetector = () => {
     name: constants.detector.name,
   });
 };
+
+const onNext = () => {};
 </script>
 
 <template>

@@ -5,9 +5,7 @@ import { useStore } from "@/store";
 import { storeToRefs } from "pinia";
 import { useRouter } from "vue-router";
 import { constants } from "@/router";
-import { setModel, setCanvasTEST, getImgRotate } from "@/utils";
-
-import img1 from "@/assets/doc_test017.jpg";
+import { setModel } from "@/utils";
 
 const store = useStore();
 const router = useRouter();
@@ -17,25 +15,9 @@ const onLoadedModel = async () => {
   await setModel();
   isLoading.value = false;
   router.push(constants.detector.path);
-
-  callback();
+  // router.push(constants.edit.path);
 };
 onLoadedModel();
-
-const callback = () => {
-  const i = new Image();
-  i.src = img1;
-  i.onload = () => {
-    const img = getImgRotate(i);
-    // document.body.appendChild(img);
-  };
-  // setCanvasTEST(img1);
-  // setCanvasTEST(img2);
-  // setCanvasTEST(img3);
-  // setCanvasTEST(img4);
-  // setCanvasTEST(img5);
-  // setCanvasTEST(img6);
-};
 </script>
 
 <template>

@@ -1,8 +1,12 @@
 <script setup lang="ts">
 import { useRouter } from "vue-router";
 import { constants } from "@/router";
+import { useStore } from "@/store";
+import { storeToRefs } from "pinia";
 
 const router = useRouter();
+const store = useStore();
+const { documents } = storeToRefs(store);
 
 const onDocuments = (id: string) => {
   router.push({

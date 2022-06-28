@@ -1,9 +1,14 @@
 <script setup lang="ts">
+import { ref } from "vue";
 import RoundBtn from "@/components/common/RoundBtn.vue";
 import { useRouter } from "vue-router";
 import { constants } from "@/router";
+import { useStore } from "@/store";
+import { storeToRefs } from "pinia";
 
 const router = useRouter();
+const store = useStore();
+const { documents } = storeToRefs(store);
 
 const onCrop = () => {
   router.push({
@@ -22,7 +27,7 @@ const onCrop = () => {
       <RoundBtn icons="crop" @mouseup="onCrop" />
       <RoundBtn icons="delete" />
     </div>
-    <div class="pages">{{ `1 / 1` }}</div>
+    <div class="pages">{{ `1 / ${documents.values.length}` }}</div>
     <div class="canvas">
       <canvas width="100%" height="100%" />
     </div>

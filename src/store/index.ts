@@ -1,5 +1,12 @@
 import { defineStore } from "pinia";
 
+import img1 from "@/assets/doc_test017.jpg";
+import img2 from "@/assets/doc_test019.jpg";
+import img3 from "@/assets/doc_test056.jpg";
+import img4 from "@/assets/doc_test060.jpg";
+import img5 from "@/assets/doc_test063.jpg";
+import img6 from "@/assets/doc_test068.jpg";
+
 type DialogType = "alert" | "confirm";
 
 export interface Square {
@@ -16,6 +23,7 @@ interface Document {
 }
 
 interface State {
+  document: Document | null;
   documents: Document[];
   flashMode: "auto" | "off" | "flash";
   dialogText: string[];
@@ -27,6 +35,7 @@ interface State {
   cameraWidth: number;
   cameraHeight: number;
   video: HTMLVideoElement | null;
+  currentPage: number;
   isDialog: boolean;
   isLoading: boolean;
   isFlash: boolean;
@@ -38,6 +47,7 @@ export const useStore = defineStore("common", {
   state: (): State => {
     return {
       // all these properties will have their type inferred automatically
+      document: null,
       documents: [],
       dialogText: [],
       dialogLabels: [],
@@ -49,6 +59,7 @@ export const useStore = defineStore("common", {
       cameraWidth: 0,
       cameraHeight: 0,
       video: null,
+      currentPage: 1,
       isLoading: true,
       isFlash: false,
       isDialog: false,
