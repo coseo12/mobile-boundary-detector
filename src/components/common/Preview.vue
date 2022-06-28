@@ -20,9 +20,13 @@ const onDocuments = (id: string) => {
 
 <template>
   <div class="preview-wrap">
-    <div v-for="(img, idx) in 10" class="card" @mouseup="onDocuments('test')">
+    <div
+      v-for="(d, idx) in documents"
+      class="card"
+      @mouseup="onDocuments(d.id)"
+    >
       <div class="badge">{{ idx + 1 }}</div>
-      <img src="@/assets/doc_test017.jpg" alt="img-1" />
+      <img :src="d.img.src" alt="img" />
     </div>
   </div>
 </template>

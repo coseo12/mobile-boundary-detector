@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { watch } from "vue";
 import ToastProvider from "@/components/providers/ToastProvider.vue";
 import DialogProvider from "@/components/providers/DialogProvider.vue";
 import { useStore } from "@/store";
@@ -14,10 +15,22 @@ const { isLoading } = storeToRefs(store);
 const onLoadedModel = async () => {
   await setModel();
   isLoading.value = false;
-  router.push(constants.detector.path);
-  // router.push(constants.edit.path);
+  // router.push(constants.detector.path);
+
+  await store.setDocuments();
 };
 onLoadedModel();
+
+watch(store.documents, () => {
+  if (store.documents.length > 5) {
+    router.push({
+      name: constants.edit.name,
+      params: {
+        id: "test1",
+      },
+    });
+  }
+});
 </script>
 
 <template>

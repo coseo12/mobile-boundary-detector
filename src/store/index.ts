@@ -1,11 +1,14 @@
 import { defineStore } from "pinia";
 
-import img1 from "@/assets/doc_test017.jpg";
-import img2 from "@/assets/doc_test019.jpg";
-import img3 from "@/assets/doc_test056.jpg";
-import img4 from "@/assets/doc_test060.jpg";
-import img5 from "@/assets/doc_test063.jpg";
-import img6 from "@/assets/doc_test068.jpg";
+import img6 from "@/assets/doc_test017.jpg";
+import img5 from "@/assets/doc_test019.jpg";
+import img4 from "@/assets/doc_test056.jpg";
+import img3 from "@/assets/doc_test060.jpg";
+import img2 from "@/assets/doc_test063.jpg";
+import img1 from "@/assets/doc_test068.jpg";
+import { getSquare } from "@/utils";
+
+const img = [img1, img2, img3, img4, img5, img6];
 
 type DialogType = "alert" | "confirm";
 
@@ -23,7 +26,6 @@ interface Document {
 }
 
 interface State {
-  document: Document | null;
   documents: Document[];
   flashMode: "auto" | "off" | "flash";
   dialogText: string[];
@@ -35,6 +37,7 @@ interface State {
   cameraWidth: number;
   cameraHeight: number;
   video: HTMLVideoElement | null;
+  current: Document | null;
   currentPage: number;
   isDialog: boolean;
   isLoading: boolean;
@@ -47,7 +50,6 @@ export const useStore = defineStore("common", {
   state: (): State => {
     return {
       // all these properties will have their type inferred automatically
-      document: null,
       documents: [],
       dialogText: [],
       dialogLabels: [],
@@ -59,6 +61,7 @@ export const useStore = defineStore("common", {
       cameraWidth: 0,
       cameraHeight: 0,
       video: null,
+      current: null,
       currentPage: 1,
       isLoading: true,
       isFlash: false,
@@ -106,6 +109,26 @@ export const useStore = defineStore("common", {
       imgEl.onload = async () => {
         callback(imgEl);
       };
+    },
+
+    setDocuments() {
+      for (let i = 0; i < 6; i++) {
+        const m = new Image();
+        m.src = img[i];
+        m.onload = async () => {
+          const square = await getSquare(m);
+          if (square) {
+            const t: Document = {
+              id: `test${i + 1}`,
+              img: m,
+              square,
+              circlePath: [],
+              fitPath: [],
+            };
+            this.documents.push(t);
+          }
+        };
+      }
     },
   },
 });

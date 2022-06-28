@@ -207,6 +207,36 @@ export const getImgRotate = (img: HTMLImageElement) => {
   return imgEl;
 };
 
+export const getCropImg = (img: HTMLImageElement, square: Square) => {
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d")!;
+  let cx = square.cx;
+  let cy = square.cy;
+  let cxMax = cx;
+  let cyMax = cy;
+  let cWidth = 0;
+  let cHeight = 0;
+
+  for (const s of square.lines) {
+    cx = s.dx < cx ? s.dx : cx;
+    cy = s.dy < cy ? s.dy : cy;
+    cxMax = s.dx > cxMax ? s.dx : cxMax;
+    cyMax = s.dy > cyMax ? s.dy : cyMax;
+  }
+  cWidth = cxMax - cx;
+  cHeight = cyMax - cy;
+  canvas.width = cWidth;
+  canvas.height = cHeight;
+
+  ctx.drawImage(img, cx, cy, cWidth, cHeight, 0, 0, cWidth, cHeight);
+
+  const imgEl = new Image();
+  imgEl.src = canvas.toDataURL();
+  return imgEl;
+};
+
+// ----------------
+
 export const setRotate = (
   ctx: CanvasRenderingContext2D,
   width: number,

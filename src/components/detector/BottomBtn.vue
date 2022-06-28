@@ -16,7 +16,7 @@ const onEdit = () => {
   router.push({
     name: constants.edit.name,
     params: {
-      id: "test",
+      id: documents.value[0].id,
     },
   });
 };
@@ -45,7 +45,7 @@ const onChange = (e: Event) => {
 const onCapture = () => {
   store.capture(async (img) => {
     const square = await getSquare(img);
-    if (square) {
+    if (square && square.lines.length === 3) {
       documents.value.push({
         id: `${Date.now()}`,
         img,
@@ -69,7 +69,7 @@ const onCapture = () => {
       <button class="r0" @mouseup="onCapture"></button>
     </div>
     <div class="box">
-      <RoundBtn icons="edit" @mouseup="onEdit" />
+      <RoundBtn v-if="documents.length > 0" icons="edit" @mouseup="onEdit" />
     </div>
     <input
       ref="fileEl"

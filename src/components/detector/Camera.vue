@@ -14,7 +14,6 @@ import {
 let RECT_WIDTH = 0;
 let RECT_HEIGHT = 0;
 let REQUEST_ANIMATION_FRAME = 0;
-let IS_DETECT = false;
 
 const VIDEO_WIDTH = 3840;
 const VIDEO_HEIGHT = 2160;
