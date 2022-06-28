@@ -13,7 +13,7 @@ import {
 
 let RECT_WIDTH = 0;
 let RECT_HEIGHT = 0;
-let ANIMATIONFRAME = null;
+let REQUEST_ANIMATION_FRAME = 0;
 let IS_DETECT = false;
 
 const VIDEO_WIDTH = 3840;
@@ -25,6 +25,7 @@ const { video, cameraHeight, cameraWidth } = storeToRefs(store);
 
 const stream = ref<MediaStream | null>(null);
 const canvas = ref<HTMLCanvasElement | null>(null);
+const ctx = ref<CanvasRenderingContext2D | null>(null);
 const wrapper = ref<HTMLElement | null>(null);
 
 const getStream = async () => {
@@ -56,8 +57,9 @@ const getStream = async () => {
 
     video.value.srcObject = stream.value;
 
-    video.value.addEventListener("loadeddata", (event) => {
-      setBoundingClientRect();
+    video.value.addEventListener("loadeddata", async (event) => {
+      await setBoundingClientRect();
+      detect();
     });
   } catch (error) {
     console.log(error);
@@ -68,8 +70,42 @@ const getStream = async () => {
   }
 };
 
+const detect = (t = 0) => {
+  // if (!this.time) {
+  //     this.time = t;
+  //   }
+
+  //   const now = t - this.time;
+
+  //   if (now > this.fpsTime) {
+  //     this.time = t;
+  //     this.curFrame += 1;
+  //     if (this.curFrame === this.totalFrame) {
+  //       this.curFrame = 0;
+  //     }
+  //   }
+
+  store.capture(async (img) => {
+    if (!canvas.value || !ctx.value) {
+      return;
+    }
+    ctx.value.clearRect(0, 0, canvas.value.width, canvas.value.height);
+    const square = await getSquare(img);
+    const options = {
+      xRatio: canvas.value.width / img.naturalWidth,
+      yRatio: canvas.value.height / img.naturalHeight,
+    };
+    if (square) {
+      drawDetectLines(ctx.value, square, options);
+      const circles = getDetectCirclePath(square, options);
+      drawPath(ctx.value, circles);
+    }
+  });
+  REQUEST_ANIMATION_FRAME = requestAnimationFrame(detect);
+};
+
 const setBoundingClientRect = () => {
-  if (!wrapper.value || !video.value) {
+  if (!wrapper.value || !video.value || !canvas.value) {
     return;
   }
   const rect = wrapper.value.getBoundingClientRect();
@@ -78,8 +114,12 @@ const setBoundingClientRect = () => {
   RECT_HEIGHT = rect.height;
   cameraWidth.value = videoRect.width;
   cameraHeight.value = videoRect.height;
-
   video.value.width = RECT_WIDTH;
+
+  const videoFitRect = video.value.getBoundingClientRect();
+  ctx.value = canvas.value.getContext("2d");
+  canvas.value.width = videoFitRect.width;
+  canvas.value.height = videoFitRect.height;
 };
 
 onMounted(async () => {
@@ -93,6 +133,7 @@ onUnmounted(() => {
   video.value.pause();
   video.value.src = "";
   stream.value.getTracks()[0].stop();
+  cancelAnimationFrame(REQUEST_ANIMATION_FRAME);
 });
 </script>
 
@@ -100,7 +141,7 @@ onUnmounted(() => {
   <article ref="wrapper" aria-label="camera wrapper" class="camera-wrapper">
     <div class="video-wrap">
       <video ref="video" autoplay muted playsInline />
-      <canvas ref="canvas"></canvas>
+      <canvas ref="canvas" class="line-view"></canvas>
     </div>
     <Copyright class="copyright" />
     <Preview class="float" />
@@ -116,6 +157,17 @@ onUnmounted(() => {
   width: 100%;
   height: 100%;
   overflow: hidden;
+
+  .video-wrap {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .line-view {
+      position: absolute;
+    }
+  }
 
   .float {
     position: absolute;

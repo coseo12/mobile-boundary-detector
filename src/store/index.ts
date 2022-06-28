@@ -78,7 +78,7 @@ export const useStore = defineStore("common", {
       }, 2000);
     },
 
-    async capture(callback: Function) {
+    async capture(callback: (img: HTMLImageElement) => void) {
       if (!this.video) {
         return;
       }
@@ -93,7 +93,7 @@ export const useStore = defineStore("common", {
       const imgEl = new Image();
       imgEl.src = dataUrl;
       imgEl.onload = async () => {
-        callback();
+        callback(imgEl);
       };
     },
   },

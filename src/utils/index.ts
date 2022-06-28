@@ -34,7 +34,9 @@ export const getSquare = async (imgEl: HTMLImageElement) => {
   const cloneImg = imgEl.cloneNode(true) as HTMLImageElement;
   cloneImg.width = 320;
   cloneImg.height = 320;
+
   const img = await window.tf.browser.fromPixels(cloneImg);
+
   const square = await detect(img, model);
   if (square.length !== 4) {
     return null;
