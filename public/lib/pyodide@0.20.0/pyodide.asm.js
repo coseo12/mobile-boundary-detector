@@ -10291,7 +10291,7 @@ var _createPyodideModule = (function () {
     function log_python_error(jserror) {
       try {
         let msg = Hiwire.get_value(jserror).message;
-        console.warn("Python exception:\n" + msg + "\n");
+        //Ignore:: console.warn("Python exception:\n" + msg + "\n");
       } catch (e) {
         API.fatal_error(e);
       }

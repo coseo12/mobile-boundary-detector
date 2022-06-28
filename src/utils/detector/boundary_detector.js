@@ -23,10 +23,10 @@ export async function detect(img, model) {
   let square = [];
   try {
     if (WebAssembly) {
-      console.log("Running WebAssembly 💻");
+      // console.log("Running WebAssembly 💻");
       square = await pred_squares(pyodide, pts, pts_score, vmap);
     } else {
-      console.log("Running numjs 💿");
+      // console.log("Running numjs 💿");
       square = pred_squares_numjs(pts, pts_score, vmap);
     }
   } catch (error) {

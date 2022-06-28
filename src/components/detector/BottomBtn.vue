@@ -3,7 +3,12 @@ import { ref } from "vue";
 import RoundBtn from "@/components/common/RoundBtn.vue";
 import { useRouter } from "vue-router";
 import { constants } from "@/router";
+import { useStore } from "@/store";
+import { storeToRefs } from "pinia";
+import { getSquare } from "@/utils";
 
+const store = useStore();
+const { documents } = storeToRefs(store);
 const router = useRouter();
 const fileEl = ref<HTMLInputElement | null>(null);
 
@@ -38,7 +43,20 @@ const onChange = (e: Event) => {
 };
 
 const onCapture = () => {
-  console.log("onCapture");
+  store.capture(async (img) => {
+    const square = await getSquare(img);
+    if (square) {
+      documents.value.push({
+        id: `${Date.now()}`,
+        img,
+        square,
+        circlePath: [],
+        fitPath: [],
+      });
+    } else {
+      store.onToast("문서의 네 꼭지점이 모두 보이도록 촬영해주세요.");
+    }
+  });
 };
 </script>
 

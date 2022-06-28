@@ -1,9 +1,22 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { useRouter } from "vue-router";
+import { constants } from "@/router";
+
+const router = useRouter();
+
+const onDetector = () => {
+  router.push({
+    name: constants.detector.name,
+  });
+};
+</script>
 
 <template>
   <article class="bottom-wrap">
     <div class="box">
-      <button type="button" class="primary2">페이지 추가</button>
+      <button type="button" class="primary2" @click="onDetector">
+        페이지 추가
+      </button>
     </div>
     <div class="box">
       <button type="button" class="primary1">다음</button>

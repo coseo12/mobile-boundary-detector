@@ -71,20 +71,6 @@ const getStream = async () => {
 };
 
 const detect = (t = 0) => {
-  // if (!this.time) {
-  //     this.time = t;
-  //   }
-
-  //   const now = t - this.time;
-
-  //   if (now > this.fpsTime) {
-  //     this.time = t;
-  //     this.curFrame += 1;
-  //     if (this.curFrame === this.totalFrame) {
-  //       this.curFrame = 0;
-  //     }
-  //   }
-
   store.capture(async (img) => {
     if (!canvas.value || !ctx.value) {
       return;
@@ -123,16 +109,17 @@ const setBoundingClientRect = () => {
 };
 
 onMounted(async () => {
-  // await getStream();
+  await getStream();
 });
 
 onUnmounted(() => {
-  if (!video.value || !stream.value) {
-    return;
+  if (video.value) {
+    video.value.pause();
+    video.value.src = "";
   }
-  video.value.pause();
-  video.value.src = "";
-  stream.value.getTracks()[0].stop();
+  if (stream.value) {
+    stream.value.getTracks()[0].stop();
+  }
   cancelAnimationFrame(REQUEST_ANIMATION_FRAME);
 });
 </script>
