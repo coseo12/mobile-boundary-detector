@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted, watch, computed } from "vue";
 import RoundBtn from "@/components/common/RoundBtn.vue";
 import { useRouter, useRoute } from "vue-router";
 import { constants } from "@/router";
-import { useStore } from "@/store";
+import { Square, useStore } from "@/store";
 import { storeToRefs } from "pinia";
 import { getCropImg, getImgRotate, getSquare } from "@/utils";
 
@@ -24,6 +24,8 @@ const pagging = ref<HTMLDivElement | null>(null);
 const swiper = ref<HTMLDivElement | null>(null);
 const wrap = ref<HTMLDivElement | null>(null);
 const cards = ref<HTMLDivElement[]>([]);
+
+isLoader.value = false;
 
 current.value =
   documents.value.find((f) => f.id === routes.params.id) ||
@@ -47,6 +49,10 @@ const onRotate = () => {
         return;
       }
       documents.value[currentPage.value - 1].img = img;
+      documents.value[currentPage.value - 1].cropImg = await getCropImg(
+        img,
+        square
+      );
       documents.value[currentPage.value - 1].square = square;
       current.value = documents.value[currentPage.value - 1];
       isLoader.value = false;
@@ -69,6 +75,7 @@ const onDelete = () => {
     ["삭제된 파일은 복구할 수 없습니다.", "정말 삭제하시겠습니까?"],
     ["취소", "삭제"],
     () => {
+      isLoader.value = true;
       setTimeout(async () => {
         documents.value = documents.value.filter(
           (f) => f.id !== current.value?.id
@@ -81,6 +88,7 @@ const onDelete = () => {
         PAGE = PAGE > TOTAL_PAGE ? TOTAL_PAGE : PAGE;
         currentPage.value = PAGE;
         current.value = documents.value[PAGE - 1];
+        isLoader.value = false;
       });
     }
   );
@@ -159,7 +167,6 @@ const setWrapPosition = (xPosition: number) => {
 };
 
 watch(current, () => {
-  console.log("current");
   setTimeout(async () => {
     PAGE = currentPage.value;
     await setTranslate();
@@ -208,7 +215,7 @@ onMounted(() => {
         @animationend="animateEnd"
       >
         <div ref="cards" v-for="d in documents" class="card">
-          <img :src="getCropImg(d.img, d.square).src" />
+          <img :src="d.cropImg.src" />
         </div>
       </div>
     </div>

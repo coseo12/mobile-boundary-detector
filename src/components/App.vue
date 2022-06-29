@@ -16,27 +16,27 @@ const { isLoading, isLoader } = storeToRefs(store);
 const onLoadedModel = async () => {
   await setModel();
   isLoading.value = false;
-  // router.push(constants.detector.path);
+  router.push(constants.detector.path);
 
   await store.setDocuments();
 };
 onLoadedModel();
 
-watch(store.documents, () => {
-  if (store.documents.length > 5) {
-    router.push({
-      name: constants.edit.name,
-      params: {
-        id: "test1",
-      },
-    });
-  }
-});
+// watch(store.documents, () => {
+//   if (store.documents.length > 5) {
+//     router.push({
+//       name: constants.edit.name,
+//       params: {
+//         id: "test1",
+//       },
+//     });
+//   }
+// });
 </script>
 
 <template>
   <main>
-    <Loader v-if="isLoader" />
+    <Loader v-show="isLoader" />
     <ToastProvider>
       <DialogProvider>
         <router-view></router-view>

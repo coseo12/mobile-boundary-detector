@@ -6,7 +6,7 @@ import img4 from "@/assets/doc_test056.jpg";
 import img3 from "@/assets/doc_test060.jpg";
 import img2 from "@/assets/doc_test063.jpg";
 import img1 from "@/assets/doc_test068.jpg";
-import { getSquare } from "@/utils";
+import { getSquare, getCropImg } from "@/utils";
 
 const img = [img1, img2, img3, img4, img5, img6];
 
@@ -20,6 +20,7 @@ export interface Square {
 interface Document {
   id: string;
   img: HTMLImageElement;
+  cropImg: HTMLImageElement;
   square: Square;
   circlePath: Path2D[];
   fitPath: Path2D[];
@@ -112,7 +113,7 @@ export const useStore = defineStore("common", {
         callback(imgEl);
       };
     },
-
+    // ----------
     setDocuments() {
       for (let i = 0; i < 6; i++) {
         const m = new Image();
@@ -126,6 +127,7 @@ export const useStore = defineStore("common", {
               square,
               circlePath: [],
               fitPath: [],
+              cropImg: await getCropImg(m, square),
             };
             this.documents.push(t);
           }

@@ -14,13 +14,14 @@ import {
 let RECT_WIDTH = 0;
 let RECT_HEIGHT = 0;
 let REQUEST_ANIMATION_FRAME = 0;
+let IS_DETECT = false;
 
 const VIDEO_WIDTH = 3840;
 const VIDEO_HEIGHT = 2160;
 const IS_MOBILE = navigator.userAgent.toLocaleLowerCase().includes("mobile");
 
 const store = useStore();
-const { video, cameraHeight, cameraWidth } = storeToRefs(store);
+const { video, cameraHeight, cameraWidth, isLoader } = storeToRefs(store);
 
 const stream = ref<MediaStream | null>(null);
 const canvas = ref<HTMLCanvasElement | null>(null);
@@ -57,6 +58,9 @@ const getStream = async () => {
     video.value.srcObject = stream.value;
 
     video.value.addEventListener("loadeddata", async (event) => {
+      if (stream.value) {
+        isLoader.value = false;
+      }
       await setBoundingClientRect();
       detect();
     });
@@ -70,23 +74,27 @@ const getStream = async () => {
 };
 
 const detect = (t = 0) => {
-  store.capture(async (img) => {
-    if (!canvas.value || !ctx.value) {
-      return;
-    }
-    ctx.value.clearRect(0, 0, canvas.value.width, canvas.value.height);
-    const square = await getSquare(img);
-    const options = {
-      xRatio: canvas.value.width / img.naturalWidth,
-      yRatio: canvas.value.height / img.naturalHeight,
-    };
-    if (square) {
-      drawDetectLines(ctx.value, square, options);
-      const circles = getDetectCirclePath(square, options);
-      drawPath(ctx.value, circles);
-    }
-  });
-  REQUEST_ANIMATION_FRAME = requestAnimationFrame(detect);
+  if (!IS_DETECT) {
+    IS_DETECT = true;
+    store.capture(async (img) => {
+      if (!canvas.value || !ctx.value) {
+        return;
+      }
+      ctx.value.clearRect(0, 0, canvas.value.width, canvas.value.height);
+      const square = await getSquare(img);
+      const options = {
+        xRatio: canvas.value.width / img.naturalWidth,
+        yRatio: canvas.value.height / img.naturalHeight,
+      };
+      if (square) {
+        drawDetectLines(ctx.value, square, options);
+        const circles = getDetectCirclePath(square, options);
+        drawPath(ctx.value, circles);
+      }
+      IS_DETECT = false;
+      REQUEST_ANIMATION_FRAME = requestAnimationFrame(detect);
+    });
+  }
 };
 
 const setBoundingClientRect = () => {
@@ -107,19 +115,28 @@ const setBoundingClientRect = () => {
   canvas.value.height = videoFitRect.height;
 };
 
-onMounted(async () => {
-  await getStream();
-});
-
-onUnmounted(() => {
+const stopCallback = () => {
   if (video.value) {
     video.value.pause();
     video.value.src = "";
   }
   if (stream.value) {
     stream.value.getTracks()[0].stop();
+    stream.value = null;
+  }
+  if (ctx.value && canvas.value) {
+    ctx.value.clearRect(0, 0, canvas.value.width, canvas.value.height);
   }
   cancelAnimationFrame(REQUEST_ANIMATION_FRAME);
+};
+
+onMounted(async () => {
+  isLoader.value = true;
+  await getStream();
+});
+
+onUnmounted(() => {
+  stopCallback();
 });
 </script>
 
@@ -130,7 +147,7 @@ onUnmounted(() => {
       <canvas ref="canvas" class="line-view"></canvas>
     </div>
     <Copyright class="copyright" />
-    <Preview class="float" />
+    <Preview :is-push="true" :stop-callback="stopCallback" class="float" />
   </article>
 </template>
 

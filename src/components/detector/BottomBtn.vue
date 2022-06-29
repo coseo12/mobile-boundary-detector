@@ -3,12 +3,12 @@ import { ref } from "vue";
 import RoundBtn from "@/components/common/RoundBtn.vue";
 import { useRouter } from "vue-router";
 import { constants } from "@/router";
-import { useStore } from "@/store";
+import { useStore, Square } from "@/store";
 import { storeToRefs } from "pinia";
-import { getSquare } from "@/utils";
+import { getSquare, getCropImg } from "@/utils";
 
 const store = useStore();
-const { documents } = storeToRefs(store);
+const { documents, isLoader } = storeToRefs(store);
 const router = useRouter();
 const fileEl = ref<HTMLInputElement | null>(null);
 
@@ -28,7 +28,20 @@ const onUpload = () => {
   fileEl.value.click();
 };
 
-const onChange = (e: Event) => {
+const setDocuments = async (img: HTMLImageElement, square: Square) => {
+  const cropImg = await getCropImg(img, square);
+  documents.value.unshift({
+    id: `${Date.now()}`,
+    img,
+    square,
+    circlePath: [],
+    fitPath: [],
+    cropImg,
+  });
+};
+
+const onChange = async (e: Event) => {
+  isLoader.value = true;
   const el = e.target as HTMLInputElement;
   if (!el) {
     return;
@@ -39,20 +52,31 @@ const onChange = (e: Event) => {
     return;
   }
 
-  for (let i = 0; i < files.length; i++) {}
+  for (let i = 0; i < files.length; i++) {
+    const buffer = await files[i].arrayBuffer();
+    const blob = new Blob([buffer], { type: "image" });
+    const url = window.URL.createObjectURL(blob);
+    const img = new Image();
+    img.src = url;
+    img.onload = async () => {
+      const square = await getSquare(img);
+      if (square && square.lines.length === 3) {
+        setDocuments(img, square);
+        if (i === files.length - 1) {
+          isLoader.value = false;
+        }
+      } else {
+        store.onToast(`${files[i].name} 인식할 수 없습니다.`);
+      }
+    };
+  }
 };
 
 const onCapture = () => {
   store.capture(async (img) => {
     const square = await getSquare(img);
     if (square && square.lines.length === 3) {
-      documents.value.push({
-        id: `${Date.now()}`,
-        img,
-        square,
-        circlePath: [],
-        fitPath: [],
-      });
+      setDocuments(img, square);
     } else {
       store.onToast("문서의 네 꼭지점이 모두 보이도록 촬영해주세요.");
     }

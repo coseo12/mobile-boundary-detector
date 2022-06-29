@@ -2,13 +2,38 @@
 import { ref, watch } from "vue";
 import { useStore } from "@/store";
 import { storeToRefs } from "pinia";
+import { useRouter } from "vue-router";
+import { constants } from "@/router";
 
+interface Props {
+  isPush?: boolean;
+  stopCallback?: Function;
+}
+
+const props = defineProps<Props>();
+
+const router = useRouter();
 const store = useStore();
-const { documents, current, currentPage } = storeToRefs(store);
+const { documents, current, currentPage, isLoader } = storeToRefs(store);
 
 const cards = ref<HTMLDivElement[]>([]);
 
 const onDocuments = (id: string, idx: number) => {
+  if (props.stopCallback) {
+    props.stopCallback();
+  }
+  if (props.isPush) {
+    isLoader.value = true;
+    setTimeout(() => {
+      router.push({
+        name: constants.edit.name,
+        params: {
+          id,
+        },
+      });
+    });
+    return;
+  }
   const find = documents.value.find((f) => f.id === id);
   if (!find) {
     return;
