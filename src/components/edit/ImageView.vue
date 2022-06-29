@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import RoundBtn from "@/components/common/RoundBtn.vue";
 import { useRouter, useRoute } from "vue-router";
 import { constants } from "@/router";
@@ -7,15 +7,21 @@ import { useStore } from "@/store";
 import { storeToRefs } from "pinia";
 import { getCropImg } from "@/utils";
 
+let TRANSLATE = 0;
 let IS_SWIPE = false;
 let START_X = 0;
 let END_X = 0;
-
+let PAGE = 1;
+let TOTAL_PAGE = 0;
+let CARD_WIDTH = 0;
+let CARD_HEIGHT = 0;
 const routes = useRoute();
 const router = useRouter();
 const store = useStore();
 const { documents, current, currentPage } = storeToRefs(store);
 
+const pagging = ref<HTMLDivElement | null>(null);
+const swiper = ref<HTMLDivElement | null>(null);
 const wrap = ref<HTMLDivElement | null>(null);
 const cards = ref<HTMLDivElement[]>([]);
 
@@ -24,6 +30,10 @@ current.value =
   documents.value[0] ||
   null;
 
+PAGE = documents.value.indexOf(current.value) + 1;
+TOTAL_PAGE = documents.value.length;
+currentPage.value = PAGE;
+
 const onCrop = () => {
   router.push({
     name: constants.resize.name,
@@ -31,6 +41,36 @@ const onCrop = () => {
       id: current.value?.id || "test",
     },
   });
+};
+
+const onDelete = () => {
+  store.onDialog(
+    "confirm",
+    ["삭제된 파일은 복구할 수 없습니다.", "정말 삭제하시겠습니까?"],
+    ["취소", "삭제"],
+    () => {
+      setTimeout(async () => {
+        documents.value = documents.value.filter(
+          (f) => f.id !== current.value?.id
+        );
+        TOTAL_PAGE = documents.value.length;
+        if (TOTAL_PAGE === 0) {
+          router.push(constants.detector.path);
+          return;
+        }
+        PAGE = PAGE > TOTAL_PAGE ? TOTAL_PAGE : PAGE;
+        current.value = documents.value[PAGE - 1];
+        setTimeout(async () => {
+          await setTranslate();
+          setWrapPosition(TRANSLATE);
+          if (!pagging.value) {
+            return;
+          }
+          pagging.value.innerText = `${PAGE} / ${TOTAL_PAGE}`;
+        }, 200);
+      });
+    }
+  );
 };
 
 const onSwipeStart = (e: TouchEvent) => {
@@ -46,46 +86,79 @@ const onSwipeEnd = () => {
   const gab = END_X - START_X;
 
   switch (true) {
-    case gab < -120:
-      setTimeout(() => {
-        const page =
-          currentPage.value === cards.value.length
-            ? currentPage.value
-            : currentPage.value + 1;
-        cards.value[page - 1].scrollIntoView({
-          behavior: "smooth",
-        });
-      }, 500);
-      break;
     case gab > 120:
-      setTimeout(() => {
-        const page = currentPage.value > 1 ? currentPage.value - 1 : 1;
-        cards.value[page - 1].scrollIntoView({
-          behavior: "smooth",
-        });
-        currentPage.value = page;
-      }, 500);
+      // PREV
+      PAGE = PAGE > 1 ? PAGE - 1 : 1;
+      break;
+    case gab < -120:
+      // NEXT
+      PAGE = PAGE < TOTAL_PAGE ? PAGE + 1 : PAGE;
       break;
     default:
-      setTimeout(() => {
-        cards.value[currentPage.value - 1].scrollIntoView({
-          behavior: "smooth",
-        });
-      }, 500);
       break;
   }
+
+  TRANSLATE = CARD_WIDTH * (PAGE - 1) * -1;
+  wrap.value.animate(
+    [
+      {
+        transform: `translateX(${TRANSLATE}px)`,
+      },
+    ],
+    { duration: 200, iterations: 1 }
+  );
+
+  setTimeout(() => {
+    animateEnd();
+  }, 200);
+  currentPage.value = PAGE;
+  if (!pagging.value) {
+    return;
+  }
+  pagging.value.innerText = `${PAGE} / ${TOTAL_PAGE}`;
+};
+
+const animateEnd = () => {
+  if (!wrap.value || cards.value.length === 0) {
+    return;
+  }
+  setWrapPosition(TRANSLATE);
 };
 
 const onSwipe = (e: TouchEvent) => {
   if (!IS_SWIPE || !wrap.value || cards.value.length === 0) {
-    e.preventDefault();
-    e.stopPropagation();
     return;
   }
   END_X = e.changedTouches[0].clientX;
+  const gab = END_X - START_X;
+  setWrapPosition(gab + TRANSLATE);
 };
 
-setTimeout(() => {});
+const setTranslate = () => {
+  TRANSLATE = CARD_WIDTH * (PAGE - 1) * -1;
+};
+
+const setWrapPosition = (xPosition: number) => {
+  if (!wrap.value) {
+    return;
+  }
+  wrap.value.style.transform = `translateX(${xPosition}px)`;
+};
+
+onMounted(() => {
+  if (!swiper.value || !wrap.value || cards.value.length === 0) {
+    return;
+  }
+  const rect = swiper.value.getBoundingClientRect();
+  CARD_WIDTH = rect.width;
+  CARD_HEIGHT = rect.height;
+  cards.value.forEach((card) => {
+    card.style.width = `${CARD_WIDTH}px`;
+    card.style.height = `${CARD_HEIGHT}px`;
+  });
+  setTranslate();
+  setWrapPosition(TRANSLATE);
+});
 </script>
 
 <template>
@@ -93,17 +166,20 @@ setTimeout(() => {});
     <div class="btn-wrap">
       <RoundBtn icons="rotate" />
       <RoundBtn icons="crop" @mouseup="onCrop" />
-      <RoundBtn icons="delete" />
+      <RoundBtn icons="delete" @mouseup="onDelete" />
     </div>
-    <div class="pages">{{ `${currentPage} / ${documents.length}` }}</div>
-    <div class="carousel">
+    <div ref="pagging" class="pages">
+      {{ `${PAGE} / ${TOTAL_PAGE}` }}
+    </div>
+
+    <div ref="swiper" class="swiper">
       <div
         ref="wrap"
         class="wrap"
-        :draggable="true"
         @touchstart="onSwipeStart"
         @touchend="onSwipeEnd"
         @touchmove="onSwipe"
+        @animationend="animateEnd"
       >
         <div ref="cards" v-for="d in documents" class="card">
           <img :src="getCropImg(d.img, d.square).src" />
@@ -149,21 +225,18 @@ setTimeout(() => {});
     padding: 5px;
   }
 
-  .carousel {
+  .swiper {
     position: relative;
     width: 100%;
     height: 100%;
-    overflow-x: scroll;
-    overflow-y: hidden;
-    transition: transform 0.4 linear;
+    overflow: hidden;
+
     .wrap {
       display: flex;
       align-items: flex-start;
-      width: 100%;
-      height: 100%;
+      overflow: visible;
       .card {
         flex: 0 0 auto;
-        width: 100%;
         padding: 20px 40px;
 
         img {
@@ -173,16 +246,6 @@ setTimeout(() => {});
         }
       }
     }
-  }
-
-  ::-webkit-scrollbar {
-    width: 0px;
-  }
-  ::-webkit-scrollbar-thumb {
-    background: transparent;
-  }
-  ::-webkit-scrollbar-thumb:hover {
-    background: transparent;
   }
 }
 </style>
