@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import RoundBtn from "@/components/common/RoundBtn.vue";
 import { useRouter, useRoute } from "vue-router";
 import { constants } from "@/router";
 import { useStore } from "@/store";
 import { storeToRefs } from "pinia";
-import { getCropImg } from "@/utils";
+import { getCropImg, getImgRotate, getSquare } from "@/utils";
 
 let TRANSLATE = 0;
 let IS_SWIPE = false;
@@ -18,7 +18,7 @@ let CARD_HEIGHT = 0;
 const routes = useRoute();
 const router = useRouter();
 const store = useStore();
-const { documents, current, currentPage } = storeToRefs(store);
+const { documents, current, currentPage, isLoader } = storeToRefs(store);
 
 const pagging = ref<HTMLDivElement | null>(null);
 const swiper = ref<HTMLDivElement | null>(null);
@@ -33,6 +33,26 @@ current.value =
 PAGE = documents.value.indexOf(current.value) + 1;
 TOTAL_PAGE = documents.value.length;
 currentPage.value = PAGE;
+
+const onRotate = () => {
+  isLoader.value = true;
+  setTimeout(() => {
+    if (!current.value) {
+      return;
+    }
+    const img = getImgRotate(current.value?.img);
+    img.onload = async () => {
+      const square = await getSquare(img);
+      if (!square) {
+        return;
+      }
+      documents.value[currentPage.value - 1].img = img;
+      documents.value[currentPage.value - 1].square = square;
+      current.value = documents.value[currentPage.value - 1];
+      isLoader.value = false;
+    };
+  }, 200);
+};
 
 const onCrop = () => {
   router.push({
@@ -59,15 +79,8 @@ const onDelete = () => {
           return;
         }
         PAGE = PAGE > TOTAL_PAGE ? TOTAL_PAGE : PAGE;
+        currentPage.value = PAGE;
         current.value = documents.value[PAGE - 1];
-        setTimeout(async () => {
-          await setTranslate();
-          setWrapPosition(TRANSLATE);
-          if (!pagging.value) {
-            return;
-          }
-          pagging.value.innerText = `${PAGE} / ${TOTAL_PAGE}`;
-        }, 200);
       });
     }
   );
@@ -145,6 +158,19 @@ const setWrapPosition = (xPosition: number) => {
   wrap.value.style.transform = `translateX(${xPosition}px)`;
 };
 
+watch(current, () => {
+  console.log("current");
+  setTimeout(async () => {
+    PAGE = currentPage.value;
+    await setTranslate();
+    setWrapPosition(TRANSLATE);
+    if (!pagging.value) {
+      return;
+    }
+    pagging.value.innerText = `${PAGE} / ${TOTAL_PAGE}`;
+  }, 300);
+});
+
 onMounted(() => {
   if (!swiper.value || !wrap.value || cards.value.length === 0) {
     return;
@@ -164,9 +190,9 @@ onMounted(() => {
 <template>
   <article class="image-view">
     <div class="btn-wrap">
-      <RoundBtn icons="rotate" />
-      <RoundBtn icons="crop" @mouseup="onCrop" />
-      <RoundBtn icons="delete" @mouseup="onDelete" />
+      <RoundBtn icons="rotate" @touchend="onRotate" />
+      <RoundBtn icons="crop" @touchend="onCrop" />
+      <RoundBtn icons="delete" @touchend="onDelete" />
     </div>
     <div ref="pagging" class="pages">
       {{ `${PAGE} / ${TOTAL_PAGE}` }}
@@ -237,12 +263,13 @@ onMounted(() => {
       overflow: visible;
       .card {
         flex: 0 0 auto;
+        display: flex;
+        align-items: center;
         padding: 20px 40px;
 
         img {
           width: 100%;
           max-height: 380px;
-          border-radius: 5px;
         }
       }
     }

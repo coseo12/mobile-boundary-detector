@@ -2,6 +2,7 @@
 import { watch } from "vue";
 import ToastProvider from "@/components/providers/ToastProvider.vue";
 import DialogProvider from "@/components/providers/DialogProvider.vue";
+import Loader from "@/components/common/Loader.vue";
 import { useStore } from "@/store";
 import { storeToRefs } from "pinia";
 import { useRouter } from "vue-router";
@@ -10,7 +11,7 @@ import { setModel } from "@/utils";
 
 const store = useStore();
 const router = useRouter();
-const { isLoading } = storeToRefs(store);
+const { isLoading, isLoader } = storeToRefs(store);
 
 const onLoadedModel = async () => {
   await setModel();
@@ -35,6 +36,7 @@ watch(store.documents, () => {
 
 <template>
   <main>
+    <Loader v-if="isLoader" />
     <ToastProvider>
       <DialogProvider>
         <router-view></router-view>

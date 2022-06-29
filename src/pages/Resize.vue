@@ -13,11 +13,11 @@ const onSave = () => {};
 <template>
   <section class="resize" aria-label="Resized">
     <article class="top">
-      <RoundBtn icons="back" @mouseup="onBack" />
+      <RoundBtn icons="back" @touchend="onBack" />
     </article>
     <article class="middle"></article>
     <article class="bottom">
-      <button type="button" class="save" @mouseup="onSave">저장</button>
+      <button type="button" class="save" @touchend="onSave">저장</button>
     </article>
   </section>
 </template>

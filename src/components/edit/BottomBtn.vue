@@ -3,9 +3,9 @@ import { useRouter } from "vue-router";
 import { constants } from "@/router";
 import { useStore } from "@/store";
 import { storeToRefs } from "pinia";
-const store = useStore();
-const { documents } = storeToRefs(store);
 
+const store = useStore();
+const { current } = storeToRefs(store);
 const router = useRouter();
 
 const onDetector = () => {
@@ -14,18 +14,25 @@ const onDetector = () => {
   });
 };
 
-const onNext = () => {};
+const onNext = () => {
+  router.push({
+    name: constants.resize.name,
+    params: {
+      id: current.value?.id || "",
+    },
+  });
+};
 </script>
 
 <template>
   <article class="bottom-wrap">
     <div class="box">
-      <button type="button" class="primary2" @click="onDetector">
+      <button type="button" class="primary2" @touchend="onDetector">
         페이지 추가
       </button>
     </div>
     <div class="box">
-      <button type="button" class="primary1">다음</button>
+      <button type="button" class="primary1" @touchend="onNext">다음</button>
     </div>
   </article>
 </template>

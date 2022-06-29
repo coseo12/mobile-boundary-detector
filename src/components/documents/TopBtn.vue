@@ -8,12 +8,12 @@ const onBack = () => {};
 
 <template>
   <article class="top-btn">
-    <RoundBtn icons="back" @mouseup="onBack" />
+    <RoundBtn icons="back" @touchend="onBack" />
     <p>내 문서</p>
     <div class="btn-wrap">
-      <RoundBtn icons="search" @mouseup="onBack" />
-      <RoundBtn icons="delete" @mouseup="onBack" />
-      <RoundBtn icons="share" @mouseup="onBack" />
+      <RoundBtn icons="search" @touchend="onBack" />
+      <RoundBtn icons="delete" @touchend="onBack" />
+      <RoundBtn icons="share" @touchend="onBack" />
     </div>
   </article>
 </template>

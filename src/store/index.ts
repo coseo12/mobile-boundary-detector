@@ -41,6 +41,7 @@ interface State {
   currentPage: number;
   isDialog: boolean;
   isLoading: boolean;
+  isLoader: boolean;
   isFlash: boolean;
   isToast: boolean;
 }
@@ -67,6 +68,7 @@ export const useStore = defineStore("common", {
       isFlash: false,
       isDialog: false,
       isToast: false,
+      isLoader: false,
     };
   },
   actions: {

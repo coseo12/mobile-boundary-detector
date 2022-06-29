@@ -79,15 +79,15 @@ watch(isDialog, () => {
         v-if="dialogType === 'alert'"
         type="button"
         class="ok btn"
-        @mouseup="onClose"
+        @touchend="onClose"
       >
         확인
       </button>
       <div v-else class="btn-wrap">
-        <button type="button" class="cancel btn" @mouseup="onCancel">
+        <button type="button" class="cancel btn" @touchend="onCancel">
           {{ dialogLabels[0] }}
         </button>
-        <button type="button" class="confirm btn" @mouseup="onConfirm">
+        <button type="button" class="confirm btn" @touchend="onConfirm">
           {{ dialogLabels[1] }}
         </button>
       </div>

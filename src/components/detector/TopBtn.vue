@@ -22,8 +22,8 @@ const onDocuments = () => {
 
 <template>
   <article aria-label="top button wrapper" class="top-btn">
-    <RoundBtn icons="document" @mouseup="onDocuments" />
-    <RoundBtn v-if="flashMode === 'flash'" icons="flash" @mouseup="onFlash" />
+    <RoundBtn icons="document" @touchend="onDocuments" />
+    <RoundBtn v-if="flashMode === 'flash'" icons="flash" @touchend="onFlash" />
     <RoundBtn
       v-else-if="flashMode === 'auto'"
       icons="flash-auto"

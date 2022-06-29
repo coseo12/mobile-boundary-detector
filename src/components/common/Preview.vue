@@ -1,29 +1,44 @@
 <script setup lang="ts">
-import { useRouter } from "vue-router";
-import { constants } from "@/router";
+import { ref, watch } from "vue";
 import { useStore } from "@/store";
 import { storeToRefs } from "pinia";
 
-const router = useRouter();
 const store = useStore();
-const { documents } = storeToRefs(store);
+const { documents, current, currentPage } = storeToRefs(store);
 
-const onDocuments = (id: string) => {
-  router.push({
-    name: constants.edit.name,
-    params: {
-      id,
-    },
-  });
+const cards = ref<HTMLDivElement[]>([]);
+
+const onDocuments = (id: string, idx: number) => {
+  const find = documents.value.find((f) => f.id === id);
+  if (!find) {
+    return;
+  }
+  current.value = find;
+  currentPage.value = idx + 1;
 };
+
+watch(currentPage, () => {
+  if (cards.value.length === 0) {
+    return;
+  }
+  setTimeout(() => {
+    cards.value[currentPage.value - 1].scrollIntoView({
+      block: "nearest",
+      inline: "end",
+      behavior: "smooth",
+    });
+  }, 300);
+});
 </script>
 
 <template>
   <div class="preview-wrap">
     <div
+      ref="cards"
       v-for="(d, idx) in documents"
       class="card"
-      @mouseup="onDocuments(d.id)"
+      :data-id="`p-${idx + 1}`"
+      @touchend="onDocuments(d.id, idx)"
     >
       <div class="badge">{{ idx + 1 }}</div>
       <img :src="d.img.src" alt="img" />

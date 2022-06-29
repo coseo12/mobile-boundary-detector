@@ -7,7 +7,7 @@ const onDelete = () => {};
 
 <template>
   <article class="bottom-btn">
-    <button type="button" class="delete" @mouseup="onDelete">삭제</button>
+    <button type="button" class="delete" @touchend="onDelete">삭제</button>
   </article>
 </template>
 

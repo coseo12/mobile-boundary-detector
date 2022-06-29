@@ -63,13 +63,13 @@ const onCapture = () => {
 <template>
   <article aria-label="bottom button wrapper" class="bottom-btn">
     <div class="box">
-      <RoundBtn icons="upload" @mouseup="onUpload" />
+      <RoundBtn icons="upload" @touchend="onUpload" />
     </div>
     <div class="box">
-      <button class="r0" @mouseup="onCapture"></button>
+      <button class="r0" @touchend="onCapture"></button>
     </div>
     <div class="box">
-      <RoundBtn v-if="documents.length > 0" icons="edit" @mouseup="onEdit" />
+      <RoundBtn v-if="documents.length > 0" icons="edit" @touchend="onEdit" />
     </div>
     <input
       ref="fileEl"
