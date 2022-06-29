@@ -10,6 +10,8 @@ import { useRouter } from "vue-router";
 import { constants } from "@/router";
 import { setModel } from "@/utils";
 
+const HEIGHT = `${window.innerHeight}px`;
+
 const store = useStore();
 const router = useRouter();
 const { isLoading, isLoader, isCapture } = storeToRefs(store);
@@ -54,6 +56,7 @@ onLoadedModel();
 main {
   position: relative;
   max-width: 512px;
+  max-height: v-bind("HEIGHT");
 
   .dialog {
     button {

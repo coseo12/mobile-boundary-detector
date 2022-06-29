@@ -60,13 +60,14 @@ const onChange = async (e: Event) => {
     img.src = url;
     img.onload = async () => {
       const square = await getSquare(img);
-      if (square && square.lines.length === 3) {
+      if (square && square.lines.length === 2) {
         setDocuments(img, square);
         if (i === files.length - 1) {
           isLoader.value = false;
         }
       } else {
-        store.onToast(`${files[i].name} 인식할 수 없습니다.`);
+        store.onToast(`일부 파일을 업로드할 수 없습니다.`);
+        isLoader.value = false;
       }
     };
   }
@@ -119,6 +120,7 @@ const onCapture = () => {
   justify-content: space-around;
   align-items: center;
   padding: 0 0.5vw;
+
   .box {
     width: 33vw;
     display: flex;

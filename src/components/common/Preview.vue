@@ -10,6 +10,9 @@ interface Props {
   stopCallback?: Function;
 }
 
+let IS_SCROLL = false;
+let TIMEOUT: NodeJS.Timeout | null = null;
+
 const props = defineProps<Props>();
 
 const router = useRouter();
@@ -18,9 +21,20 @@ const { documents, current, currentPage, isLoader } = storeToRefs(store);
 
 const cards = ref<HTMLDivElement[]>([]);
 
+const touchstart = () => {
+  TIMEOUT = setTimeout(() => {
+    IS_SCROLL = true;
+  }, 100);
+};
+
 const onDocuments = (id: string, idx: number) => {
-  if (props.stopCallback) {
-    // props.stopCallback();
+  if (TIMEOUT) {
+    clearTimeout(TIMEOUT);
+  }
+
+  if (IS_SCROLL) {
+    IS_SCROLL = false;
+    return;
   }
   if (props.isPush) {
     isLoader.value = true;
@@ -57,7 +71,7 @@ watch(currentPage, () => {
 </script>
 
 <template>
-  <div class="preview-wrap">
+  <div class="preview-wrap" @touchstart="touchstart">
     <div
       ref="cards"
       v-for="(d, idx) in documents"

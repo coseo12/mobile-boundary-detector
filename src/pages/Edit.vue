@@ -2,6 +2,8 @@
 import Preview from "@/components/common/Preview.vue";
 import BottomBtn from "@/components/edit/BottomBtn.vue";
 import ImageView from "@/components/edit/ImageView.vue";
+
+const HEIGHT = `${window.innerHeight}px`;
 </script>
 
 <template>
@@ -15,7 +17,7 @@ import ImageView from "@/components/edit/ImageView.vue";
 <style lang="scss" scoped>
 .edit {
   width: 100%;
-  height: 100%;
+  height: v-bind("HEIGHT");
   background-color: $lomin-deep-black;
   display: flex;
   flex-direction: column;

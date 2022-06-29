@@ -3,7 +3,7 @@ import TopBtn from "@/components/documents/TopBtn.vue";
 import BottomBtn from "@/components/documents/BottomBtn.vue";
 import ImgList from "@/components/documents/ImgList.vue";
 
-const onDelete = () => {};
+const HEIGHT = `${window.innerHeight}px`;
 </script>
 
 <template>
@@ -18,7 +18,7 @@ const onDelete = () => {};
 .documents {
   position: relative;
   width: 100%;
-  height: 100%;
+  height: v-bind("HEIGHT");
   display: flex;
   flex-direction: column;
   justify-content: space-between;

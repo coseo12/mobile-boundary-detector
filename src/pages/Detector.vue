@@ -2,6 +2,8 @@
 import TopBtn from "@/components/detector/TopBtn.vue";
 import Camera from "@/components/detector/Camera.vue";
 import BottomBtn from "@/components/detector/BottomBtn.vue";
+
+const HEIGHT = `${window.innerHeight}px`;
 </script>
 
 <template>
@@ -16,7 +18,7 @@ import BottomBtn from "@/components/detector/BottomBtn.vue";
 .detector {
   position: relative;
   width: 100%;
-  height: 100%;
+  height: v-bind("HEIGHT");
   background-color: $lomin-deep-black;
   display: flex;
   flex-direction: column;

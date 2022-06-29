@@ -3,6 +3,8 @@ import RoundBtn from "@/components/common/RoundBtn.vue";
 import { useRouter } from "vue-router";
 import { constants } from "@/router";
 
+const HEIGHT = `${window.innerHeight}px`;
+
 const router = useRouter();
 
 const onBack = () => {};
@@ -25,7 +27,7 @@ const onSave = () => {};
 <style lang="scss" scoped>
 .resize {
   width: 100%;
-  height: 100%;
+  height: v-bind("HEIGHT");
   display: flex;
   flex-direction: column;
   justify-content: space-between;
