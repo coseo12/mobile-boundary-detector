@@ -8,7 +8,7 @@ import { storeToRefs } from "pinia";
 import { getSquare, getCropImg } from "@/utils";
 
 const store = useStore();
-const { documents, isLoader } = storeToRefs(store);
+const { documents, isLoader, isCapture } = storeToRefs(store);
 const router = useRouter();
 const fileEl = ref<HTMLInputElement | null>(null);
 
@@ -73,6 +73,12 @@ const onChange = async (e: Event) => {
 };
 
 const onCapture = () => {
+  isLoader.value = true;
+  isCapture.value = true;
+  setTimeout(() => {
+    isCapture.value = false;
+  }, 100);
+
   store.capture(async (img) => {
     const square = await getSquare(img);
     if (square && square.lines.length === 3) {
@@ -80,6 +86,8 @@ const onCapture = () => {
     } else {
       store.onToast("문서의 네 꼭지점이 모두 보이도록 촬영해주세요.");
     }
+    isCapture.value = false;
+    isLoader.value = false;
   });
 };
 </script>

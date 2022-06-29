@@ -3,6 +3,7 @@ import { watch } from "vue";
 import ToastProvider from "@/components/providers/ToastProvider.vue";
 import DialogProvider from "@/components/providers/DialogProvider.vue";
 import Loader from "@/components/common/Loader.vue";
+import Flash from "@/components/common/Flash.vue";
 import { useStore } from "@/store";
 import { storeToRefs } from "pinia";
 import { useRouter } from "vue-router";
@@ -11,7 +12,7 @@ import { setModel } from "@/utils";
 
 const store = useStore();
 const router = useRouter();
-const { isLoading, isLoader } = storeToRefs(store);
+const { isLoading, isLoader, isCapture } = storeToRefs(store);
 
 const onLoadedModel = async () => {
   await setModel();
@@ -36,6 +37,7 @@ onLoadedModel();
 
 <template>
   <main>
+    <Flash v-show="isCapture" />
     <Loader v-show="isLoader" />
     <ToastProvider>
       <DialogProvider>
@@ -52,8 +54,6 @@ onLoadedModel();
 main {
   position: relative;
   max-width: 512px;
-  width: 100%;
-  height: 100vh;
 
   .dialog {
     button {

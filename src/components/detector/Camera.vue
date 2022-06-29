@@ -14,6 +14,8 @@ import {
 let RECT_WIDTH = 0;
 let RECT_HEIGHT = 0;
 let REQUEST_ANIMATION_FRAME = 0;
+let DETECT_COUNT = 0;
+let MAX_DETECT_COUNT = 2;
 let IS_DETECT = false;
 
 const VIDEO_WIDTH = 3840;
@@ -77,20 +79,23 @@ const detect = (t = 0) => {
   if (!IS_DETECT) {
     IS_DETECT = true;
     store.capture(async (img) => {
-      if (!canvas.value || !ctx.value) {
-        return;
+      if (DETECT_COUNT === 0) {
+        if (!canvas.value || !ctx.value) {
+          return;
+        }
+        ctx.value.clearRect(0, 0, canvas.value.width, canvas.value.height);
+        const square = await getSquare(img);
+        const options = {
+          xRatio: canvas.value.width / img.naturalWidth,
+          yRatio: canvas.value.height / img.naturalHeight,
+        };
+        if (square) {
+          drawDetectLines(ctx.value, square, options);
+          const circles = getDetectCirclePath(square, options);
+          drawPath(ctx.value, circles);
+        }
       }
-      ctx.value.clearRect(0, 0, canvas.value.width, canvas.value.height);
-      const square = await getSquare(img);
-      const options = {
-        xRatio: canvas.value.width / img.naturalWidth,
-        yRatio: canvas.value.height / img.naturalHeight,
-      };
-      if (square) {
-        drawDetectLines(ctx.value, square, options);
-        const circles = getDetectCirclePath(square, options);
-        drawPath(ctx.value, circles);
-      }
+      DETECT_COUNT = DETECT_COUNT === MAX_DETECT_COUNT ? 0 : DETECT_COUNT + 1;
       IS_DETECT = false;
       REQUEST_ANIMATION_FRAME = requestAnimationFrame(detect);
     });

@@ -45,6 +45,7 @@ interface State {
   isLoader: boolean;
   isFlash: boolean;
   isToast: boolean;
+  isCapture: boolean;
 }
 
 export const useStore = defineStore("common", {
@@ -70,6 +71,7 @@ export const useStore = defineStore("common", {
       isDialog: false,
       isToast: false,
       isLoader: false,
+      isCapture: false,
     };
   },
   actions: {

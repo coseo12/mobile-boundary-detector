@@ -21,7 +21,7 @@ import ImageView from "@/components/edit/ImageView.vue";
   flex-direction: column;
 
   .top {
-    height: calc(100% - 160px);
+    height: calc(100vh - 160px);
   }
 
   .middle {

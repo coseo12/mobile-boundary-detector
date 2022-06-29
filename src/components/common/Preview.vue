@@ -20,7 +20,7 @@ const cards = ref<HTMLDivElement[]>([]);
 
 const onDocuments = (id: string, idx: number) => {
   if (props.stopCallback) {
-    props.stopCallback();
+    // props.stopCallback();
   }
   if (props.isPush) {
     isLoader.value = true;
