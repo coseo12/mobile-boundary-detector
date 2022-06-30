@@ -1,6 +1,7 @@
 // @ts-ignore
 import { load, detect } from "@/utils/detector/boundary_detector.js";
 import { Square } from "@/store";
+import { toRef } from "vue";
 
 declare global {
   interface Window {
@@ -33,45 +34,46 @@ export const getSquare = async (imgEl: HTMLImageElement) => {
   const wRatio = width / 320;
   const hRatio = height / 320;
 
-  // const cloneImg = imgEl.cloneNode(true) as HTMLImageElement;
-  // cloneImg.width = 320;
-  // cloneImg.height = 320;
-  // const img = await window.tf.browser.fromPixels(cloneImg);
-  // const square = await detect(img, model);
+  const cloneImg = imgEl.cloneNode(true) as HTMLImageElement;
+  cloneImg.width = 320;
+  cloneImg.height = 320;
+  const img = await window.tf.browser.fromPixels(cloneImg);
+  const square = await detect(img, model);
+  img.dispose();
 
-  const canvas = document.createElement("canvas");
-  const ctx = canvas.getContext("2d")!;
-  canvas.width = 320;
-  canvas.height = 320;
-  ctx.drawImage(imgEl, 0, 0, canvas.width, canvas.height);
+  // const canvas = document.createElement("canvas");
+  // const ctx = canvas.getContext("2d")!;
+  // canvas.width = 320;
+  // canvas.height = 320;
+  // ctx.drawImage(imgEl, 0, 0, canvas.width, canvas.height);
 
-  const { data } = ctx.getImageData(0, 0, 320, 320);
+  // const { data } = ctx.getImageData(0, 0, 320, 320);
+  // let rgb = [];
+  // let cnt = 1;
+  // let tensor = null;
 
-  let rgb = [];
-  let cnt = 1;
-  let tensor = null;
+  // for (const v of data) {
+  //   if (cnt === 4) {
+  //     cnt = 1;
+  //     continue;
+  //   }
+  //   rgb.push(v);
+  //   cnt += 1;
+  // }
 
-  for (const v of data) {
-    if (cnt === 4) {
-      cnt = 1;
-      continue;
-    }
-    rgb.push(v);
-    cnt += 1;
-  }
+  // tensor = window.tf.tensor(rgb);
+  // tensor = tensor.reshape([320, 320, 3]);
 
-  tensor = window.tf.tensor(rgb);
-  tensor = tensor.reshape([320, 320, 3]);
+  // const square = await detect(tensor, model);
 
   console.log(
     "detect",
+    square,
     window.tf.memory().numBytesInGPU - tmp,
     window.tf.memory().numBytesInGPUAllocated
   );
 
   tmp = window.tf.memory().numBytesInGPU;
-
-  const square = await detect(tensor, model);
 
   if (square.length !== 4) {
     return null;

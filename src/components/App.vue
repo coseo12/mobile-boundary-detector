@@ -19,7 +19,12 @@ const { isLoading, isLoader, isCapture } = storeToRefs(store);
 const onLoadedModel = async () => {
   await setModel();
   isLoading.value = false;
-  router.push(constants.detector.path);
+  router.push({
+    name: constants.detector.name,
+    params: {
+      id: "test1",
+    },
+  });
 
   // await store.setDocuments();
 };

@@ -11,20 +11,19 @@ export async function load(model_path) {
   //           import os
   //           import numpy as np
   //       `);
-
   return [tfjsModel];
 }
 
 export async function detect(img, model) {
-  let [tfjsModel] = model;
+  const [tfjsModel, pyodide] = model;
 
-  let [pts, pts_score, vmap] = await inference_tfjs(img, tfjsModel);
+  const [pts, pts_score, vmap] = await inference_tfjs(img, tfjsModel);
 
   let square = [];
   try {
-    if (!WebAssembly) {
+    if (WebAssembly) {
       // console.log("Running WebAssembly 💻");
-      // square = await pred_squares(pyodide, pts, pts_score, vmap);
+      square = await pred_squares(pyodide, pts, pts_score, vmap);
     } else {
       // console.log("Running numjs 💿");
       square = pred_squares_numjs(pts, pts_score, vmap);

@@ -75,7 +75,7 @@ const getStream = async () => {
         isLoader.value = false;
       }
       await setBoundingClientRect();
-      // detect();
+      detect();
     });
   } catch (error) {
     console.log(error);
