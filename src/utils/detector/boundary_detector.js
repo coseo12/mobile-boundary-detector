@@ -5,13 +5,13 @@ export async function load(model_path) {
   const tfjsModel = await tf.loadGraphModel(model_path);
   const preheat = tf.zeros([1, 320, 320, 3]).toFloat();
   tfjsModel.predict(preheat);
-  // const pyodide = await loadPyodide();
-  // await pyodide.loadPackage("numpy");
-  // await pyodide.runPythonAsync(`
-  //           import os
-  //           import numpy as np
-  //       `);
-  return [tfjsModel];
+  const pyodide = await loadPyodide();
+  await pyodide.loadPackage("numpy");
+  await pyodide.runPythonAsync(`
+            import os
+            import numpy as np
+        `);
+  return [tfjsModel, pyodide];
 }
 
 export async function detect(img, model) {

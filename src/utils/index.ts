@@ -28,6 +28,16 @@ export const setModel = async () => {
 
 let tmp = 0;
 
+const GPUMemoryConsole = (s: any) => {
+  console.log(
+    "detect",
+    s,
+    window.tf.memory().numBytesInGPU - tmp,
+    window.tf.memory().numBytesInGPUAllocated
+  );
+  tmp = window.tf.memory().numBytesInGPU;
+};
+
 export const getSquare = async (imgEl: HTMLImageElement) => {
   const width = imgEl.naturalWidth;
   const height = imgEl.naturalHeight;
@@ -65,15 +75,7 @@ export const getSquare = async (imgEl: HTMLImageElement) => {
   // tensor = tensor.reshape([320, 320, 3]);
 
   // const square = await detect(tensor, model);
-
-  console.log(
-    "detect",
-    square,
-    window.tf.memory().numBytesInGPU - tmp,
-    window.tf.memory().numBytesInGPUAllocated
-  );
-
-  tmp = window.tf.memory().numBytesInGPU;
+  // GPUMemoryConsole(square);
 
   if (square.length !== 4) {
     return null;
