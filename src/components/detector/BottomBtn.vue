@@ -60,13 +60,13 @@ const onChange = async (e: Event) => {
     img.src = url;
     img.onload = async () => {
       const square = await getSquare(img);
-      if (square && square.lines.length === 2) {
+      if (square && square.lines.length === 3) {
         setDocuments(img, square);
         if (i === files.length - 1) {
           isLoader.value = false;
         }
       } else {
-        store.onToast(`일부 파일을 업로드할 수 없습니다.`);
+        store.onToast(`인식할 수 없는 이미지입니다.`);
         isLoader.value = false;
       }
     };

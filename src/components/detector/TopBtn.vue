@@ -29,11 +29,12 @@ const onDocuments = () => {
       icons="flash-auto"
       @click="onFlash"
     />
-    <RoundBtn
+    <div></div>
+    <!-- <RoundBtn
       v-else-if="flashMode === 'off'"
       icons="flash-off"
       @click="onFlash"
-    />
+    /> -->
   </article>
 </template>
 

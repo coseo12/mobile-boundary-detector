@@ -25,19 +25,54 @@ export const setModel = async () => {
   model = await load("./model/model.json");
 };
 
+let tmp = 0;
+
 export const getSquare = async (imgEl: HTMLImageElement) => {
   const width = imgEl.naturalWidth;
   const height = imgEl.naturalHeight;
   const wRatio = width / 320;
   const hRatio = height / 320;
 
-  const cloneImg = imgEl.cloneNode(true) as HTMLImageElement;
-  cloneImg.width = 320;
-  cloneImg.height = 320;
+  // const cloneImg = imgEl.cloneNode(true) as HTMLImageElement;
+  // cloneImg.width = 320;
+  // cloneImg.height = 320;
+  // const img = await window.tf.browser.fromPixels(cloneImg);
+  // const square = await detect(img, model);
 
-  const img = await window.tf.browser.fromPixels(cloneImg);
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d")!;
+  canvas.width = 320;
+  canvas.height = 320;
+  ctx.drawImage(imgEl, 0, 0, canvas.width, canvas.height);
 
-  const square = await detect(img, model);
+  const { data } = ctx.getImageData(0, 0, 320, 320);
+
+  let rgb = [];
+  let cnt = 1;
+  let tensor = null;
+
+  for (const v of data) {
+    if (cnt === 4) {
+      cnt = 1;
+      continue;
+    }
+    rgb.push(v);
+    cnt += 1;
+  }
+
+  tensor = window.tf.tensor(rgb);
+  tensor = tensor.reshape([320, 320, 3]);
+
+  console.log(
+    "detect",
+    window.tf.memory().numBytesInGPU - tmp,
+    window.tf.memory().numBytesInGPUAllocated
+  );
+
+  tmp = window.tf.memory().numBytesInGPU;
+
+  const square = await detect(tensor, model);
+
   if (square.length !== 4) {
     return null;
   }
@@ -88,7 +123,7 @@ export const drawDetectLines = async (
 export const getDetectCirclePath = (square: Square, options: Options) => {
   const xRatio = options?.xRatio || 1;
   const yRatio = options?.yRatio || 1;
-  const round = 8;
+  const round = 5;
   const deg = 2 * Math.PI;
   const path = [];
   const circle = new Path2D();

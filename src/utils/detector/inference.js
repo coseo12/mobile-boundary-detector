@@ -1,21 +1,29 @@
 // tensorflowJS
-export function inference_tfjs(image, tfjsModel) {
+export async function inference_tfjs(image, tfjsModel) {
   // 320 * 320 size 로 input을 받던가 320 * 320 size로 resize 해야함
-  let input = tf.expandDims(image);
 
-  input = input.toFloat();
+  // let input = tf.expandDims(image);
 
-  let outputTensor = tfjsModel.predict(input);
+  // input = input.toFloat();
+
+  // const input = tf.expandDims(image).toFloat();
+  // const outputTensor = tfjsModel.predict(input);
+
+  const outputTensor = tf.tidy(() => {
+    const input = tf.expandDims(image).toFloat();
+    return tfjsModel.predict(input);
+  });
 
   // fp32
   // const pts = Array.from(outputTensor[6].dataSync());
   // const pts_score = Array.from(outputTensor[7].dataSync());
   // const vmap = Array.from(outputTensor[12].dataSync());
-
   // fp16
   const pts = Array.from(outputTensor[9].dataSync());
   const pts_score = Array.from(outputTensor[15].dataSync());
   const vmap = Array.from(outputTensor[13].dataSync());
+
+  tf.dispose(outputTensor);
 
   return [pts, pts_score, vmap];
 }

@@ -21,7 +21,7 @@ const onLoadedModel = async () => {
   isLoading.value = false;
   router.push(constants.detector.path);
 
-  await store.setDocuments();
+  // await store.setDocuments();
 };
 onLoadedModel();
 

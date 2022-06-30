@@ -9,17 +9,28 @@ import {
   getDetectCirclePath,
   drawDetectLines,
   drawPath,
+  setModel,
 } from "@/utils";
 
 let RECT_WIDTH = 0;
 let RECT_HEIGHT = 0;
 let REQUEST_ANIMATION_FRAME = 0;
 let DETECT_COUNT = 0;
-let MAX_DETECT_COUNT = 2;
+let MAX_DETECT_COUNT = 0;
 let IS_DETECT = false;
 
-const VIDEO_WIDTH = 3840;
-const VIDEO_HEIGHT = 2160;
+/*
+ * ----- 16:9 -----
+ * 3840 * 2160 (4k)
+ * 2560 * 1440 (WQHD)
+ * 1920 * 1080
+ * 1600 * 900
+ * 1366 * 768
+ * 1280 * 720
+ */
+
+const VIDEO_WIDTH = 1440;
+const VIDEO_HEIGHT = 2560;
 const IS_MOBILE = navigator.userAgent.toLocaleLowerCase().includes("mobile");
 
 const store = useStore();
@@ -64,7 +75,7 @@ const getStream = async () => {
         isLoader.value = false;
       }
       await setBoundingClientRect();
-      detect();
+      // detect();
     });
   } catch (error) {
     console.log(error);
@@ -112,12 +123,17 @@ const setBoundingClientRect = () => {
   RECT_HEIGHT = rect.height;
   cameraWidth.value = videoRect.width;
   cameraHeight.value = videoRect.height;
+
   video.value.width = RECT_WIDTH;
+  // video.value.height = RECT_HEIGHT;
 
   const videoFitRect = video.value.getBoundingClientRect();
   ctx.value = canvas.value.getContext("2d");
   canvas.value.width = videoFitRect.width;
   canvas.value.height = videoFitRect.height;
+
+  const p = document.querySelector(".tmp") as HTMLDivElement;
+  p.innerText = `${VIDEO_WIDTH}, ${VIDEO_HEIGHT}, ${RECT_WIDTH}, ${RECT_HEIGHT}`;
 };
 
 const stopCallback = () => {
@@ -151,6 +167,7 @@ onUnmounted(() => {
       <video ref="video" autoplay muted playsInline />
       <canvas ref="canvas" class="line-view"></canvas>
     </div>
+    <div class="tmp"></div>
     <Copyright class="copyright" />
     <Preview :is-push="true" :stop-callback="stopCallback" class="float" />
   </article>
@@ -187,6 +204,12 @@ onUnmounted(() => {
     position: absolute;
     bottom: 95px;
     opacity: 0.5;
+  }
+
+  .tmp {
+    position: absolute;
+    color: #fff;
+    bottom: 120px;
   }
 }
 </style>
