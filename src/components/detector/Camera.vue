@@ -21,22 +21,17 @@ let IS_DETECT = false;
 
 /*
  * ----- 16:9 -----
- * 3840 * 2160 (4k)
- * 2560 * 1440 (WQHD)
- * 1920 * 1080
- * 1600 * 900
- * 1366 * 768
- * 1280 * 720
- * 1024 * 576
- * 854 * 480
- * ----- 4:3 -----
- * 800 * 600
- * 640 * 480
- * 320 * 240
+ * 3840 * 2160 (UHD)
+ * 2560 * 1440 (QHD)
+ * 1920 * 1080 (FHD)
+ * 1600 * 900 (HD+)
+ * 1280 * 720 (HD)
+ * 960 * 540 (qHD)
+ * 640 * 360 (nHD)
  */
 
-const VIDEO_WIDTH = 576;
-const VIDEO_HEIGHT = 1024;
+const VIDEO_WIDTH = 720;
+const VIDEO_HEIGHT = 1280;
 const IS_MOBILE = navigator.userAgent.toLocaleLowerCase().includes("mobile");
 
 const store = useStore();
@@ -89,6 +84,7 @@ const getStream = async () => {
       "텍스트스코프 자동 인식 기능 이용을 위해서는",
       "카메라 엑세스 권한이필요합니다.",
     ]);
+    isLoader.value = false;
   }
 };
 
@@ -137,9 +133,6 @@ const setBoundingClientRect = () => {
   ctx.value = canvas.value.getContext("2d");
   canvas.value.width = videoFitRect.width;
   canvas.value.height = videoFitRect.height;
-
-  const p = document.querySelector(".tmp") as HTMLDivElement;
-  p.innerText = `${VIDEO_WIDTH}, ${VIDEO_HEIGHT}`;
 };
 
 const stopCallback = () => {
@@ -173,7 +166,6 @@ onUnmounted(() => {
       <video ref="video" autoplay muted playsInline />
       <canvas ref="canvas" class="line-view"></canvas>
     </div>
-    <div class="tmp"></div>
     <Copyright class="copyright" />
     <Preview :is-push="true" :stop-callback="stopCallback" class="float" />
   </article>
@@ -203,7 +195,7 @@ onUnmounted(() => {
   .float {
     position: absolute;
     left: 0;
-    bottom: -30px;
+    bottom: -10px;
   }
 
   .copyright {

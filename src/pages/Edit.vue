@@ -28,12 +28,12 @@ const HEIGHT = `${window.innerHeight}px`;
 
   .middle {
     position: relative;
-    bottom: 20px;
+    height: 80px;
   }
 
   .bottom {
     width: 100%;
-    height: 60px;
+    height: 80px;
   }
 }
 </style>

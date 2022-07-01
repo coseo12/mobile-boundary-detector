@@ -41,11 +41,14 @@ const onNext = () => {
 .bottom-wrap {
   display: flex;
   align-items: center;
+  height: 80px;
   padding: 0 5px;
 
   .box {
     width: 50vw;
     margin: 0 5px;
+
+    background-color: "red";
   }
 }
 </style>

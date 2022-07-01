@@ -21,12 +21,12 @@ const onLoadedModel = async () => {
   isLoading.value = false;
   router.push({
     name: constants.detector.name,
-    params: {
-      id: "test1",
-    },
+    // params: {
+    //   id: "test1",
+    // },
   });
 
-  await store.setDocuments();
+  // await store.setDocuments();
 };
 onLoadedModel();
 

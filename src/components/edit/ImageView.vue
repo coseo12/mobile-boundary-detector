@@ -59,7 +59,7 @@ const onRotate = async () => {
       current.value = documents.value[currentPage.value - 1];
       isLoader.value = false;
     };
-  }, 100);
+  }, 300);
 };
 
 const onCrop = () => {
@@ -277,7 +277,6 @@ onMounted(() => {
         display: flex;
         align-items: center;
         padding: 0 40px;
-        margin-bottom: 20px;
 
         img {
           width: 100%;

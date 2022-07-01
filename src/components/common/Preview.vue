@@ -88,7 +88,7 @@ watch(currentPage, () => {
 <style lang="scss" scoped>
 .preview-wrap {
   width: 100%;
-  height: 100px;
+  height: 80px;
   overflow-x: scroll;
   display: flex;
   padding: 5px;
@@ -96,8 +96,8 @@ watch(currentPage, () => {
   .card {
     position: relative;
     margin: 0 5px;
-    width: 50px;
-    height: 50px;
+    width: 60px;
+    height: 100px;
     flex: 0 0 auto;
 
     .badge {
@@ -105,9 +105,9 @@ watch(currentPage, () => {
       display: flex;
       justify-content: center;
       align-items: center;
-      width: 20px;
-      height: 20px;
-      font-size: 12px;
+      width: 15px;
+      height: 15px;
+      font-size: 8px;
       font-weight: 600;
       margin: 3px;
       border-radius: 50%;
@@ -117,8 +117,8 @@ watch(currentPage, () => {
 
     img {
       display: block;
-      width: 50px;
-      height: 50px;
+      width: 60px;
+      height: 60px;
     }
   }
 }
