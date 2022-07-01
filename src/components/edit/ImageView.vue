@@ -3,9 +3,9 @@ import { ref, onMounted, watch, computed } from "vue";
 import RoundBtn from "@/components/common/RoundBtn.vue";
 import { useRouter, useRoute } from "vue-router";
 import { constants } from "@/router";
-import { Square, useStore } from "@/store";
+import { useStore } from "@/store";
 import { storeToRefs } from "pinia";
-import { getCropImg, getImgRotate, getSquare } from "@/utils";
+import { getImgRotate, getRotateSqure } from "@/utils";
 
 let TRANSLATE = 0;
 let IS_SWIPE = false;
@@ -36,28 +36,30 @@ PAGE = documents.value.indexOf(current.value) + 1;
 TOTAL_PAGE = documents.value.length;
 currentPage.value = PAGE;
 
-const onRotate = () => {
+const onRotate = async () => {
   isLoader.value = true;
-  setTimeout(() => {
+  setTimeout(async () => {
     if (!current.value) {
       return;
     }
-    const img = getImgRotate(current.value?.img);
+    const img = await getImgRotate(current.value.img);
+    const rotateCropImg = await getImgRotate(current.value.cropImg);
+    current.value.deg = current.value.deg === 270 ? 0 : current.value.deg + 90;
     img.onload = async () => {
-      const square = await getSquare(img);
+      if (!current.value) {
+        return;
+      }
+      const square = await getRotateSqure(current.value.square);
       if (!square) {
         return;
       }
       documents.value[currentPage.value - 1].img = img;
-      documents.value[currentPage.value - 1].cropImg = await getCropImg(
-        img,
-        square
-      );
+      documents.value[currentPage.value - 1].cropImg = rotateCropImg;
       documents.value[currentPage.value - 1].square = square;
       current.value = documents.value[currentPage.value - 1];
       isLoader.value = false;
     };
-  }, 200);
+  }, 100);
 };
 
 const onCrop = () => {

@@ -24,6 +24,7 @@ interface Document {
   square: Square;
   circlePath: Path2D[];
   fitPath: Path2D[];
+  deg: number;
 }
 
 interface State {
@@ -130,6 +131,7 @@ export const useStore = defineStore("common", {
               circlePath: [],
               fitPath: [],
               cropImg: await getCropImg(m, square),
+              deg: 0,
             };
             this.documents.push(t);
           }

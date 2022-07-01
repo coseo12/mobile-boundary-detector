@@ -1,8 +1,6 @@
 // @ts-ignore
 import { load, detect } from "@/utils/detector/boundary_detector.js";
 import { Square } from "@/store";
-import { toRef } from "vue";
-
 declare global {
   interface Window {
     tf: any;
@@ -38,6 +36,32 @@ const GPUMemoryConsole = (s: any) => {
   tmp = window.tf.memory().numBytesInGPU;
 };
 
+// const getRotatePosition = (x: number, y: number) => {
+//   const r = (90 * Math.PI) / 180;
+//   const radian = Math.atan(x / y);
+//   const l = Math.sqrt(x * x + y * y);
+//   const v1 = l * Math.cos(radian);
+//   const v2 = l * Math.sin(radian);
+//   return {
+//     x: v1 * Math.cos(r) - v2 * Math.sin(r) * -1,
+//     y: v1 * Math.sin(r) + v2 * Math.cos(r),
+//   };
+// };
+
+export const getRotateSqure = async (square: Square) => {
+  const s: Square = {
+    cx: square.cy,
+    cy: square.cx,
+    lines: [],
+  };
+
+  for (const l of square.lines) {
+    const p = { dx: l.dy, dy: l.dx };
+    s.lines.push(p);
+  }
+  return s;
+};
+
 export const getSquare = async (imgEl: HTMLImageElement) => {
   const width = imgEl.naturalWidth;
   const height = imgEl.naturalHeight;
@@ -51,6 +75,7 @@ export const getSquare = async (imgEl: HTMLImageElement) => {
   const square = await detect(img, model);
   img.dispose();
 
+  // -------- Tensorflow.js memory leak!! ---------
   // const canvas = document.createElement("canvas");
   // const ctx = canvas.getContext("2d")!;
   // canvas.width = 320;
@@ -75,6 +100,9 @@ export const getSquare = async (imgEl: HTMLImageElement) => {
   // tensor = tensor.reshape([320, 320, 3]);
 
   // const square = await detect(tensor, model);
+  // ------------------------------------------------
+
+  // --- Memory check ---
   // GPUMemoryConsole(square);
 
   if (square.length !== 4) {
@@ -217,19 +245,26 @@ export const drawPath = async (
   paths: Path2D[],
   type: "circle" | "line" = "circle"
 ) => {
+  let cnt = 0;
+  const c = ["red", "green", "yellow", "blue"];
   ctx.save();
   if (type === "circle") {
-    ctx.fillStyle = colorSet.orange;
     for (const p of paths) {
+      ctx.fillStyle = c[cnt];
       ctx.fill(p);
+
+      cnt++;
     }
   } else {
-    ctx.strokeStyle = colorSet.orange;
     ctx.lineWidth = 5;
     for (const p of paths) {
+      ctx.strokeStyle = ctx.fillStyle = c[cnt];
       ctx.stroke(p);
+
+      cnt++;
     }
   }
+
   ctx.restore();
 };
 
@@ -238,8 +273,8 @@ export const getImgRotate = (img: HTMLImageElement) => {
   const ctx = canvas.getContext("2d")!;
   canvas.width = img.naturalHeight;
   canvas.height = img.naturalWidth;
-  ctx.rotate((90 * Math.PI) / 180);
-  ctx.drawImage(img, 0, canvas.width * -1);
+  ctx.rotate((-90 * Math.PI) / 180);
+  ctx.drawImage(img, canvas.height * -1, 0);
 
   const imgEl = new Image();
   imgEl.src = canvas.toDataURL("image/png");

@@ -37,6 +37,7 @@ const setDocuments = async (img: HTMLImageElement, square: Square) => {
     circlePath: [],
     fitPath: [],
     cropImg,
+    deg: 0,
   });
 };
 
@@ -74,22 +75,21 @@ const onChange = async (e: Event) => {
 };
 
 const onCapture = () => {
-  isLoader.value = true;
   isCapture.value = true;
   setTimeout(() => {
     isCapture.value = false;
-  }, 100);
-
-  store.capture(async (img) => {
-    const square = await getSquare(img);
-    if (square && square.lines.length === 3) {
-      setDocuments(img, square);
-    } else {
-      store.onToast("문서의 네 꼭지점이 모두 보이도록 촬영해주세요.");
-    }
-    isCapture.value = false;
-    isLoader.value = false;
-  });
+    isLoader.value = true;
+    store.capture(async (img) => {
+      const square = await getSquare(img);
+      if (square && square.lines.length === 3) {
+        setDocuments(img, square);
+      } else {
+        store.onToast("문서의 네 꼭지점이 모두 보이도록 촬영해주세요.");
+      }
+      isCapture.value = false;
+      isLoader.value = false;
+    });
+  }, 1);
 };
 </script>
 

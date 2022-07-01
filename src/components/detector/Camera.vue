@@ -29,8 +29,8 @@ let IS_DETECT = false;
  * 1280 * 720
  */
 
-const VIDEO_WIDTH = 1440;
-const VIDEO_HEIGHT = 2560;
+const VIDEO_WIDTH = 720;
+const VIDEO_HEIGHT = 1280;
 const IS_MOBILE = navigator.userAgent.toLocaleLowerCase().includes("mobile");
 
 const store = useStore();
@@ -124,8 +124,8 @@ const setBoundingClientRect = () => {
   cameraWidth.value = videoRect.width;
   cameraHeight.value = videoRect.height;
 
-  video.value.width = RECT_WIDTH;
-  // video.value.height = RECT_HEIGHT;
+  // video.value.width = RECT_WIDTH;
+  video.value.height = RECT_HEIGHT;
 
   const videoFitRect = video.value.getBoundingClientRect();
   ctx.value = canvas.value.getContext("2d");
@@ -133,7 +133,7 @@ const setBoundingClientRect = () => {
   canvas.value.height = videoFitRect.height;
 
   const p = document.querySelector(".tmp") as HTMLDivElement;
-  p.innerText = `${VIDEO_WIDTH}, ${VIDEO_HEIGHT}, ${RECT_WIDTH}, ${RECT_HEIGHT}`;
+  p.innerText = `${VIDEO_WIDTH}, ${VIDEO_HEIGHT}`;
 };
 
 const stopCallback = () => {
