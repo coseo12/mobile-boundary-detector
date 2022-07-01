@@ -17,6 +17,7 @@ export interface Square {
   cy: number;
   lines: { dx: number; dy: number }[];
 }
+
 interface Document {
   id: string;
   img: HTMLImageElement;

@@ -26,7 +26,7 @@ const onLoadedModel = async () => {
     // },
   });
 
-  // await store.setDocuments();
+  await store.setDocuments();
 };
 onLoadedModel();
 
