@@ -27,10 +27,16 @@ let IS_DETECT = false;
  * 1600 * 900
  * 1366 * 768
  * 1280 * 720
+ * 1024 * 576
+ * 854 * 480
+ * ----- 4:3 -----
+ * 800 * 600
+ * 640 * 480
+ * 320 * 240
  */
 
-const VIDEO_WIDTH = 720;
-const VIDEO_HEIGHT = 1280;
+const VIDEO_WIDTH = 576;
+const VIDEO_HEIGHT = 1024;
 const IS_MOBILE = navigator.userAgent.toLocaleLowerCase().includes("mobile");
 
 const store = useStore();
@@ -197,19 +203,19 @@ onUnmounted(() => {
   .float {
     position: absolute;
     left: 0;
-    bottom: -10px;
+    bottom: -30px;
   }
 
   .copyright {
     position: absolute;
-    bottom: 95px;
+    bottom: 75px;
     opacity: 0.5;
   }
 
   .tmp {
     position: absolute;
     color: #fff;
-    bottom: 120px;
+    bottom: 95px;
   }
 }
 </style>

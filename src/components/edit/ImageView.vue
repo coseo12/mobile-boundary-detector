@@ -276,11 +276,12 @@ onMounted(() => {
         flex: 0 0 auto;
         display: flex;
         align-items: center;
-        padding: 20px 40px;
+        padding: 0 40px;
+        margin-bottom: 20px;
 
         img {
           width: 100%;
-          max-height: 380px;
+          max-height: 360px;
         }
       }
     }

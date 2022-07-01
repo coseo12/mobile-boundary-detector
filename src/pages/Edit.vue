@@ -28,7 +28,7 @@ const HEIGHT = `${window.innerHeight}px`;
 
   .middle {
     position: relative;
-    bottom: -10px;
+    bottom: 20px;
   }
 
   .bottom {

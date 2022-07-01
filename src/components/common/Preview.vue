@@ -96,8 +96,8 @@ watch(currentPage, () => {
   .card {
     position: relative;
     margin: 0 5px;
-    width: 70px;
-    height: 80px;
+    width: 50px;
+    height: 50px;
     flex: 0 0 auto;
 
     .badge {
@@ -117,8 +117,8 @@ watch(currentPage, () => {
 
     img {
       display: block;
-      width: 70px;
-      height: 80px;
+      width: 50px;
+      height: 50px;
     }
   }
 }
