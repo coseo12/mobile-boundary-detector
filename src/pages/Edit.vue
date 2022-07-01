@@ -22,13 +22,12 @@ const HEIGHT = `${window.innerHeight}px`;
   display: flex;
   flex-direction: column;
 
-  .top {
-    height: calc(100vh - 160px);
-  }
-
   .middle {
     position: relative;
-    height: 80px;
+    display: flex;
+    align-items: center;
+    height: 100px;
+    min-height: 80px;
   }
 
   .bottom {

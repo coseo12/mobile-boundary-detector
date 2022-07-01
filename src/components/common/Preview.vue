@@ -88,8 +88,10 @@ watch(currentPage, () => {
 <style lang="scss" scoped>
 .preview-wrap {
   width: 100%;
-  height: 80px;
+  height: 100%;
+  max-height: 80px;
   overflow-x: scroll;
+  overflow-y: hidden;
   display: flex;
   padding: 5px;
 
@@ -97,7 +99,6 @@ watch(currentPage, () => {
     position: relative;
     margin: 0 5px;
     width: 60px;
-    height: 100px;
     flex: 0 0 auto;
 
     .badge {

@@ -60,6 +60,11 @@ const onChange = async (e: Event) => {
     const img = new Image();
     img.src = url;
     img.onload = async () => {
+      if (img.naturalWidth > 1280) {
+        img.width = 1280;
+      } else if (img.naturalHeight > 1280) {
+        img.height = 1280;
+      }
       const square = await getSquare(img);
       if (square && square.lines.length === 3) {
         setDocuments(img, square);
