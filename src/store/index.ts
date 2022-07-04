@@ -121,7 +121,7 @@ export const useStore = defineStore("common", {
     },
     // ----------
     setDocuments() {
-      for (let i = 0; i < 6; i++) {
+      for (let i = 0; i < 1; i++) {
         const m = new Image();
         m.src = img[i];
         m.onload = async () => {
@@ -138,9 +138,9 @@ export const useStore = defineStore("common", {
             };
             this.documents.push(t);
 
-            // if (i === 0) {
-            //   this.current = t;
-            // }
+            if (i === 0) {
+              this.current = t;
+            }
           }
         };
       }

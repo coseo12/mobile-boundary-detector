@@ -31,12 +31,13 @@ onLoadedModel();
 
 // watch(current, () => {
 //   router.push({
-//     name: constants.edit.name,
+//     name: constants.resize.name,
 //     params: {
 //       id: "test1",
 //     },
 //   });
 // });
+//
 </script>
 
 <template>

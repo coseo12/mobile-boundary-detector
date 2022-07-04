@@ -13,11 +13,10 @@ interface Options {
 }
 
 let model: any[] = [];
-let isCircles: boolean = false;
-let isFit: boolean = false;
 
 const colorSet = {
   orange: "#f34a00",
+  transparent: "transparent",
 };
 
 export const setModel = async () => {
@@ -155,7 +154,7 @@ export const drawDetectLines = async (
 export const getDetectCirclePath = (
   square: Square,
   options: Options,
-  round: number = 13
+  round: number = 8
 ) => {
   const xRatio = options?.xRatio || 1;
   const yRatio = options?.yRatio || 1;
@@ -163,6 +162,7 @@ export const getDetectCirclePath = (
   const path = [];
   const circle = new Path2D();
   circle.arc(square.cx * xRatio, square.cy * yRatio, round, 0, deg);
+
   path.push(circle);
 
   for (const l of square.lines) {
@@ -177,33 +177,58 @@ const getPosition = (
   startX: number,
   endX: number,
   startY: number,
-  endY: number
+  endY: number,
+  type: "touches" | "line" = "line"
 ) => {
   let cx = 0;
   let cy = 0;
   let x = 0;
   let y = 0;
 
-  if (startX <= endX && startY <= endY) {
-    cx = startX + Math.abs(startX - endX) / 1.6;
-    cy = startY + Math.abs(startY - endY) / 1.6;
-    x = startX + Math.abs(startX - endX) / 2.4;
-    y = startY + Math.abs(startY - endY) / 2.4;
-  } else if (startX >= endX && startY <= endY) {
-    cx = endX + Math.abs(startX - endX) / 2.4;
-    cy = startY + Math.abs(startY - endY) / 1.6;
-    x = endX + Math.abs(startX - endX) / 1.6;
-    y = startY + Math.abs(startY - endY) / 2.4;
-  } else if (startX <= endX && startY >= endY) {
-    cx = startX + Math.abs(startX - endX) / 2.4;
-    cy = endY + Math.abs(startY - endY) / 1.6;
-    x = startX + Math.abs(startX - endX) / 1.6;
-    y = endY + Math.abs(startY - endY) / 2.4;
-  } else if (startX >= endX && startY >= endY) {
-    cx = endX + Math.abs(startX - endX) / 1.6;
-    cy = endY + Math.abs(startY - endY) / 1.6;
-    x = endX + Math.abs(startX - endX) / 2.4;
-    y = endY + Math.abs(startY - endY) / 2.4;
+  if (type === "line") {
+    if (startX <= endX && startY <= endY) {
+      cx = startX + Math.abs(startX - endX) / 1.6;
+      cy = startY + Math.abs(startY - endY) / 1.6;
+      x = startX + Math.abs(startX - endX) / 2.4;
+      y = startY + Math.abs(startY - endY) / 2.4;
+    } else if (startX >= endX && startY <= endY) {
+      cx = endX + Math.abs(startX - endX) / 2.4;
+      cy = startY + Math.abs(startY - endY) / 1.6;
+      x = endX + Math.abs(startX - endX) / 1.6;
+      y = startY + Math.abs(startY - endY) / 2.4;
+    } else if (startX <= endX && startY >= endY) {
+      cx = startX + Math.abs(startX - endX) / 2.4;
+      cy = endY + Math.abs(startY - endY) / 1.6;
+      x = startX + Math.abs(startX - endX) / 1.6;
+      y = endY + Math.abs(startY - endY) / 2.4;
+    } else if (startX >= endX && startY >= endY) {
+      cx = endX + Math.abs(startX - endX) / 1.6;
+      cy = endY + Math.abs(startY - endY) / 1.6;
+      x = endX + Math.abs(startX - endX) / 2.4;
+      y = endY + Math.abs(startY - endY) / 2.4;
+    }
+  } else {
+    if (startX <= endX && startY <= endY) {
+      cx = startX + Math.abs(startX - endX) / 2;
+      cy = startY + Math.abs(startY - endY) / 2;
+      x = startX + Math.abs(startX - endX) / 2;
+      y = startY + Math.abs(startY - endY) / 2;
+    } else if (startX >= endX && startY <= endY) {
+      cx = endX + Math.abs(startX - endX) / 2;
+      cy = startY + Math.abs(startY - endY) / 2;
+      x = endX + Math.abs(startX - endX) / 2;
+      y = startY + Math.abs(startY - endY) / 2;
+    } else if (startX <= endX && startY >= endY) {
+      cx = startX + Math.abs(startX - endX) / 2;
+      cy = endY + Math.abs(startY - endY) / 2;
+      x = startX + Math.abs(startX - endX) / 2;
+      y = endY + Math.abs(startY - endY) / 2;
+    } else if (startX >= endX && startY >= endY) {
+      cx = endX + Math.abs(startX - endX) / 2;
+      cy = endY + Math.abs(startY - endY) / 2;
+      x = endX + Math.abs(startX - endX) / 2;
+      y = endY + Math.abs(startY - endY) / 2;
+    }
   }
   return { cx, cy, x, y };
 };
@@ -211,7 +236,8 @@ const getPosition = (
 export const getDetectFitPath = async (
   square: Square,
   options: Options,
-  size: number = 8
+  type: "touches" | "line" = "line",
+  size: number = 20
 ) => {
   const xRatio = options?.xRatio || 1;
   const yRatio = options?.yRatio || 1;
@@ -220,27 +246,38 @@ export const getDetectFitPath = async (
   let startY = square.cy * yRatio;
   let endX = 0;
   let endY = 0;
+
+  const deg = 2 * Math.PI;
+  const round = 30;
+
   for (const [_, v] of Object.entries(square.lines)) {
     endX = v.dx * xRatio;
     endY = v.dy * yRatio;
 
-    const { cx, cy, x, y } = getPosition(startX, endX, startY, endY);
-    const rcx = cx + size;
-    const rcy = cy + size;
-    const rx = x + size;
-    const ry = y + size;
-    const lcx = cx - size;
-    const lcy = cy - size;
-    const lx = x - size;
-    const ly = y - size;
+    const { cx, cy, x, y } = getPosition(startX, endX, startY, endY, type);
+
+    // const rcx = cx + size;
+    // const rcy = cy + size;
+    // const rx = x + size;
+    // const ry = y + size;
+    // const lcx = cx - size;
+    // const lcy = cy - size;
+    // const lx = x - size;
+    // const ly = y - size;
 
     const fit = new Path2D();
-    fit.moveTo(rcx, rcy);
-    fit.lineTo(rx, ry);
-    fit.lineTo(lx, ly);
-    fit.lineTo(lcx, lcy);
-    fit.closePath();
 
+    if (type === "line") {
+      fit.moveTo(cx, cy);
+      fit.lineTo(x, y);
+    } else {
+      fit.arc(cx, cy, round, 0, deg);
+      // fit.moveTo(rcx, rcy);
+      // fit.lineTo(rx, ry);
+      // fit.lineTo(lx, ly);
+      // fit.lineTo(lcx, lcy);
+      // fit.closePath();
+    }
     path.push(fit);
 
     startX = endX;
@@ -249,22 +286,28 @@ export const getDetectFitPath = async (
   endX = square.cx * xRatio;
   endY = square.cy * yRatio;
 
-  const { cx, cy, x, y } = getPosition(startX, endX, startY, endY);
-  const rcx = cx + size;
-  const rcy = cy + size;
-  const rx = x + size;
-  const ry = y + size;
-  const lcx = cx - size;
-  const lcy = cy - size;
-  const lx = x - size;
-  const ly = y - size;
+  const { cx, cy, x, y } = getPosition(startX, endX, startY, endY, type);
+  // const rcx = cx + size;
+  // const rcy = cy + size;
+  // const rx = x + size;
+  // const ry = y + size;
+  // const lcx = cx - size;
+  // const lcy = cy - size;
+  // const lx = x - size;
+  // const ly = y - size;
   const fit = new Path2D();
-  fit.moveTo(rcx, rcy);
-  fit.lineTo(rx, ry);
-  fit.lineTo(lx, ly);
-  fit.lineTo(lcx, lcy);
-  fit.closePath();
-  fit.closePath();
+
+  if (type === "line") {
+    fit.moveTo(cx, cy);
+    fit.lineTo(x, y);
+  } else {
+    fit.arc(cx, cy, round, 0, deg);
+    // fit.moveTo(rcx, rcy);
+    // fit.lineTo(rx, ry);
+    // fit.lineTo(lx, ly);
+    // fit.lineTo(lcx, lcy);
+    // fit.closePath();
+  }
   path.push(fit);
 
   return path;
@@ -273,24 +316,23 @@ export const getDetectFitPath = async (
 export const drawPath = async (
   ctx: CanvasRenderingContext2D,
   paths: Path2D[],
-  type: "fill" | "stroke" = "fill"
+  type: "fill" | "line" = "fill",
+  color: "orange" | "transparent" = "orange"
 ) => {
   let cnt = 0;
-  const c = ["red", "green", "yellow", "blue"];
   ctx.save();
-  if (type === "fill") {
-    for (const p of paths) {
-      ctx.fillStyle = colorSet.orange;
+  for (const p of paths) {
+    if (type === "fill") {
+      ctx.fillStyle =
+        color === "orange" ? colorSet.orange : colorSet.transparent;
       ctx.fill(p);
-      cnt++;
-    }
-  } else {
-    ctx.lineWidth = 2;
-    for (const p of paths) {
-      ctx.strokeStyle = colorSet.orange;
+    } else {
+      ctx.lineWidth = 5;
+      ctx.strokeStyle =
+        color === "orange" ? colorSet.orange : colorSet.transparent;
       ctx.stroke(p);
-      cnt++;
     }
+    cnt++;
   }
 
   ctx.restore();
@@ -354,7 +396,7 @@ export const getCropImg = (img: HTMLImageElement, square: Square) => {
   return imgEl;
 };
 
-// ----------------
+// -------- Experiment ---------
 
 // export const setRotate = (
 //   ctx: CanvasRenderingContext2D,

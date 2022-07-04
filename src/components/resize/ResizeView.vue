@@ -42,23 +42,47 @@ const setCtx = async () => {
   const height = rectImg.height;
   const xRatio = width / current.value.img.naturalWidth;
   const yRatio = height / current.value.img.naturalHeight;
-
-  current.value.circlePath = await getDetectCirclePath(square.value, {
+  const circle = await getDetectCirclePath(square.value, {
     xRatio,
     yRatio,
   });
+  const fits = await getDetectFitPath(
+    square.value,
+    {
+      xRatio,
+      yRatio,
+    },
+    "line"
+  );
 
-  current.value.fitPath = await getDetectFitPath(square.value, {
-    xRatio,
-    yRatio,
-  });
+  current.value.circlePath = await getDetectCirclePath(
+    square.value,
+    {
+      xRatio,
+      yRatio,
+    },
+    25
+  );
+
+  current.value.fitPath = await getDetectFitPath(
+    square.value,
+    {
+      xRatio,
+      yRatio,
+    },
+    "touches"
+  );
 
   canvas.value.width = width;
   canvas.value.height = height;
 
   drawDetectLines(ctx.value, square.value, { xRatio, yRatio });
-  drawPath(ctx.value, current.value.circlePath);
-  drawPath(ctx.value, current.value.fitPath);
+
+  drawPath(ctx.value, circle);
+  drawPath(ctx.value, fits, "line");
+
+  drawPath(ctx.value, current.value.circlePath, "line", "transparent");
+  drawPath(ctx.value, current.value.fitPath, "fill", "transparent");
 };
 
 const handlePathSelect = (e: TouchEvent) => {

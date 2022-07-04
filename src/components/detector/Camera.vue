@@ -37,11 +37,6 @@ const DETECT_RESOLUTION = {
   HEIGHT: 1440,
 };
 
-const CAPTURE_RESOLUTION = {
-  WIDTH: 2160,
-  HEIGHT: 3840,
-};
-
 const IS_MOBILE = navigator.userAgent.toLocaleLowerCase().includes("mobile");
 
 const store = useStore();
