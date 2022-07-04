@@ -1,26 +1,16 @@
 <script setup lang="ts">
-import RoundBtn from "@/components/common/RoundBtn.vue";
-import { useRouter } from "vue-router";
-import { constants } from "@/router";
+import BottomBtn from "@/components/resize/BottomBtn.vue";
+import TopBtn from "@/components/resize/TopBtn.vue";
+import ResizeView from "@/components/resize/ResizeView.vue";
 
 const HEIGHT = `${window.innerHeight}px`;
-
-const router = useRouter();
-
-const onBack = () => {};
-
-const onSave = () => {};
 </script>
 
 <template>
   <section class="resize" aria-label="Resized">
-    <article class="top">
-      <RoundBtn icons="back" @touchend="onBack" />
-    </article>
-    <article class="middle"></article>
-    <article class="bottom">
-      <button type="button" class="save" @touchend="onSave">저장</button>
-    </article>
+    <TopBtn class="top" />
+    <ResizeView class="middle" />
+    <BottomBtn class="bottom" />
   </section>
 </template>
 
@@ -30,43 +20,17 @@ const onSave = () => {};
   height: v-bind("HEIGHT");
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-
-  background-color: $lomin-deep-black;
-
+  overflow: hidden;
   .top {
-    padding: 10px;
-
-    button {
-      background-color: transparent;
-    }
+    height: 60px;
   }
 
   .middle {
-    height: 100%;
-    background-color: lightcoral;
+    height: calc(100% - 120px);
   }
 
   .bottom {
-    width: 100%;
     height: 60px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 10px;
-
-    .save {
-      width: 100%;
-      height: 44px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      color: #fff;
-      border-radius: 5px;
-      background-color: $lomin-deep-orange;
-      font-size: 18px;
-      font-weight: 600;
-    }
   }
 }
 </style>

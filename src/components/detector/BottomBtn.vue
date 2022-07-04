@@ -80,9 +80,9 @@ const onChange = async (e: Event) => {
 };
 
 const onCapture = () => {
-  isCapture.value = true;
+  // isCapture.value = true;
   setTimeout(() => {
-    isCapture.value = false;
+    // isCapture.value = false;
     isLoader.value = true;
     store.capture(async (img) => {
       const square = await getSquare(img);
@@ -91,7 +91,7 @@ const onCapture = () => {
       } else {
         store.onToast("문서의 네 꼭지점이 모두 보이도록 촬영해주세요.");
       }
-      isCapture.value = false;
+      // isCapture.value = false;
       isLoader.value = false;
     });
   }, 1);

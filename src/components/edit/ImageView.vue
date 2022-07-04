@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { ref, onMounted, watch, computed } from "vue";
+import { ref, onMounted, watch } from "vue";
 import RoundBtn from "@/components/common/RoundBtn.vue";
 import { useRouter, useRoute } from "vue-router";
 import { constants } from "@/router";
 import { useStore } from "@/store";
 import { storeToRefs } from "pinia";
-import { getImgRotate, getRotateSqure } from "@/utils";
+import { getImgRotate, getSquare, getCropImg } from "@/utils";
 
 let TRANSLATE = 0;
 let IS_SWIPE = false;
@@ -44,22 +44,22 @@ const onRotate = async () => {
     }
     const img = await getImgRotate(current.value.img);
     const rotateCropImg = await getImgRotate(current.value.cropImg);
-    current.value.deg = current.value.deg === 270 ? 0 : current.value.deg + 90;
-    img.onload = async () => {
-      if (!current.value) {
-        return;
-      }
-      const square = await getRotateSqure(current.value.square);
-      if (!square) {
-        return;
-      }
+    const square = await getSquare(img);
+    if (square) {
+      current.value.deg =
+        current.value.deg === -270 ? 0 : current.value.deg + -90;
       documents.value[currentPage.value - 1].img = img;
       documents.value[currentPage.value - 1].cropImg = rotateCropImg;
       documents.value[currentPage.value - 1].square = square;
       current.value = documents.value[currentPage.value - 1];
-      isLoader.value = false;
-    };
-  }, 300);
+    } else {
+      store.onDialog("alert", [
+        "회전에 실패했습니다.",
+        "재시도 또는 삭제 후 재촬영해주세요",
+      ]);
+    }
+    isLoader.value = false;
+  }, 100);
 };
 
 const onCrop = () => {

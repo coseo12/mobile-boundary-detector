@@ -155,7 +155,7 @@ export const drawDetectLines = async (
 export const getDetectCirclePath = (square: Square, options: Options) => {
   const xRatio = options?.xRatio || 1;
   const yRatio = options?.yRatio || 1;
-  const round = 5;
+  const round = 8;
   const deg = 2 * Math.PI;
   const path = [];
   const circle = new Path2D();
@@ -219,10 +219,22 @@ export const getDetectFitPath = async (square: Square, options: Options) => {
     endY = v.dy * yRatio;
 
     const { cx, cy, x, y } = getPosition(startX, endX, startY, endY);
+    const rcx = cx + 3;
+    const rcy = cy + 3;
+    const rx = x + 3;
+    const ry = y + 3;
+    const lcx = cx - 3;
+    const lcy = cy - 3;
+    const lx = x - 3;
+    const ly = y - 3;
 
     const fit = new Path2D();
-    fit.moveTo(cx, cy);
-    fit.lineTo(x, y);
+    fit.moveTo(rcx, rcy);
+    fit.lineTo(rx, ry);
+    fit.lineTo(lx, ly);
+    fit.lineTo(lcx, lcy);
+    fit.closePath();
+
     path.push(fit);
 
     startX = endX;
@@ -232,9 +244,21 @@ export const getDetectFitPath = async (square: Square, options: Options) => {
   endY = square.cy * yRatio;
 
   const { cx, cy, x, y } = getPosition(startX, endX, startY, endY);
+  const rcx = cx + 3;
+  const rcy = cy + 3;
+  const rx = x + 3;
+  const ry = y + 3;
+  const lcx = cx - 3;
+  const lcy = cy - 3;
+  const lx = x - 3;
+  const ly = y - 3;
   const fit = new Path2D();
-  fit.moveTo(cx, cy);
-  fit.lineTo(x, y);
+  fit.moveTo(rcx, rcy);
+  fit.lineTo(rx, ry);
+  fit.lineTo(lx, ly);
+  fit.lineTo(lcx, lcy);
+  fit.closePath();
+  fit.closePath();
   path.push(fit);
 
   return path;
@@ -243,24 +267,22 @@ export const getDetectFitPath = async (square: Square, options: Options) => {
 export const drawPath = async (
   ctx: CanvasRenderingContext2D,
   paths: Path2D[],
-  type: "circle" | "line" = "circle"
+  type: "fill" | "stroke" = "fill"
 ) => {
   let cnt = 0;
   const c = ["red", "green", "yellow", "blue"];
   ctx.save();
-  if (type === "circle") {
+  if (type === "fill") {
     for (const p of paths) {
-      ctx.fillStyle = c[cnt];
+      ctx.fillStyle = colorSet.orange;
       ctx.fill(p);
-
       cnt++;
     }
   } else {
-    ctx.lineWidth = 5;
+    ctx.lineWidth = 2;
     for (const p of paths) {
-      ctx.strokeStyle = ctx.fillStyle = c[cnt];
+      ctx.strokeStyle = colorSet.orange;
       ctx.stroke(p);
-
       cnt++;
     }
   }
@@ -282,6 +304,8 @@ export const getImgRotate = (img: HTMLImageElement) => {
 };
 
 export const getCropImg = (img: HTMLImageElement, square: Square) => {
+  const clipCanvas = document.createElement("canvas");
+  const clipCtx = clipCanvas.getContext("2d")!;
   const canvas = document.createElement("canvas");
   const ctx = canvas.getContext("2d")!;
   let cx = square.cx;
@@ -299,10 +323,25 @@ export const getCropImg = (img: HTMLImageElement, square: Square) => {
   }
   cWidth = cxMax - cx;
   cHeight = cyMax - cy;
+
+  clipCanvas.width = img.naturalWidth;
+  clipCanvas.height = img.naturalHeight;
+  clipCtx.save();
+
+  clipCtx.beginPath();
+  clipCtx.moveTo(square.cx, square.cy);
+  for (const l of square.lines) {
+    clipCtx.lineTo(l.dx, l.dy);
+  }
+  clipCtx.closePath();
+  clipCtx.stroke();
+  clipCtx.clip();
+  clipCtx.drawImage(img, 0, 0);
+  clipCtx.restore();
+
   canvas.width = cWidth;
   canvas.height = cHeight;
-
-  ctx.drawImage(img, cx, cy, cWidth, cHeight, 0, 0, cWidth, cHeight);
+  ctx.drawImage(clipCanvas, cx, cy, cWidth, cHeight, 0, 0, cWidth, cHeight);
 
   const imgEl = new Image();
   imgEl.src = canvas.toDataURL();
@@ -311,17 +350,17 @@ export const getCropImg = (img: HTMLImageElement, square: Square) => {
 
 // ----------------
 
-export const setRotate = (
-  ctx: CanvasRenderingContext2D,
-  width: number,
-  height: number
-) => {
-  const tx = width / 2;
-  const ty = height / 2;
-  ctx.translate(tx, ty);
-  ctx.rotate((90 * Math.PI) / 180);
-  ctx.translate(-tx, -ty);
-};
+// export const setRotate = (
+//   ctx: CanvasRenderingContext2D,
+//   width: number,
+//   height: number
+// ) => {
+//   const tx = width / 2;
+//   const ty = height / 2;
+//   ctx.translate(tx, ty);
+//   ctx.rotate((90 * Math.PI) / 180);
+//   ctx.translate(-tx, -ty);
+// };
 
 export const setCanvasTEST = (src: string) => {
   const img = document.createElement("img");
@@ -359,8 +398,7 @@ export const setCanvasTEST = (src: string) => {
       await getDetectFitPath(square, {
         xRatio: 320 / width,
         yRatio: 320 / height,
-      }),
-      "line"
+      })
     );
 
     document.body.appendChild(canvas);

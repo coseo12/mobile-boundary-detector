@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from "vue";
+import { ref, onMounted, onUnmounted, watch } from "vue";
 import Copyright from "@/components/common/Copyright.vue";
 import Preview from "@/components/common/Preview.vue";
 import { useStore } from "@/store";
@@ -9,13 +9,12 @@ import {
   getDetectCirclePath,
   drawDetectLines,
   drawPath,
-  setModel,
 } from "@/utils";
 
 let RECT_WIDTH = 0;
 let RECT_HEIGHT = 0;
 let REQUEST_ANIMATION_FRAME = 0;
-let DETECT_COUNT = 0;
+let DETECT_COUNT = 3;
 let MAX_DETECT_COUNT = 0;
 let IS_DETECT = false;
 
@@ -30,12 +29,24 @@ let IS_DETECT = false;
  * 640 * 360 (nHD)
  */
 
-const VIDEO_WIDTH = 720;
-const VIDEO_HEIGHT = 1280;
+const VIDEO_WIDTH = 540;
+const VIDEO_HEIGHT = 960;
+
+const DETECT_RESOLUTION = {
+  WIDTH: 1440,
+  HEIGHT: 2560,
+};
+
+const CAPTURE_RESOLUTION = {
+  WIDTH: 2160,
+  HEIGHT: 3840,
+};
+
 const IS_MOBILE = navigator.userAgent.toLocaleLowerCase().includes("mobile");
 
 const store = useStore();
-const { video, cameraHeight, cameraWidth, isLoader } = storeToRefs(store);
+const { video, cameraHeight, cameraWidth, isLoader, isCapture } =
+  storeToRefs(store);
 
 const stream = ref<MediaStream | null>(null);
 const canvas = ref<HTMLCanvasElement | null>(null);
@@ -47,12 +58,19 @@ const getStream = async () => {
     return;
   }
   try {
+    cancelAnimationFrame(REQUEST_ANIMATION_FRAME);
     const initalConstrains = {
       audio: false,
       video: {
         facingMode: "environment",
-        width: { ideal: VIDEO_WIDTH },
-        height: { ideal: VIDEO_HEIGHT },
+        width: {
+          ideal: isCapture ? CAPTURE_RESOLUTION.WIDTH : DETECT_RESOLUTION.WIDTH,
+        },
+        height: {
+          ideal: isCapture
+            ? CAPTURE_RESOLUTION.HEIGHT
+            : DETECT_RESOLUTION.HEIGHT,
+        },
       },
     };
     const cameraConstrainsts = {
@@ -89,6 +107,9 @@ const getStream = async () => {
 };
 
 const detect = (t = 0) => {
+  if (isCapture.value) {
+    return;
+  }
   if (!IS_DETECT) {
     IS_DETECT = true;
     store.capture(async (img) => {
@@ -121,6 +142,10 @@ const setBoundingClientRect = () => {
   }
   const rect = wrapper.value.getBoundingClientRect();
   const videoRect = video.value.getBoundingClientRect();
+
+  const p = document.querySelector(".tmp")!;
+  p.innerHTML = `${videoRect.width} * ${videoRect.height}`;
+
   RECT_WIDTH = rect.width;
   RECT_HEIGHT = rect.height;
   cameraWidth.value = videoRect.width;
@@ -150,6 +175,12 @@ const stopCallback = () => {
   cancelAnimationFrame(REQUEST_ANIMATION_FRAME);
 };
 
+watch(isCapture, () => {
+  if (isCapture.value) {
+    getStream();
+  }
+});
+
 onMounted(async () => {
   isLoader.value = true;
   await getStream();
@@ -166,6 +197,7 @@ onUnmounted(() => {
       <video ref="video" autoplay muted playsInline />
       <canvas ref="canvas" class="line-view"></canvas>
     </div>
+    <p class="tmp" />
     <Copyright class="copyright" />
     <Preview :is-push="true" :stop-callback="stopCallback" class="float" />
   </article>

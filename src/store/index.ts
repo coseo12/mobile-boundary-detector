@@ -6,7 +6,7 @@ import img4 from "@/assets/doc_test056.jpg";
 import img3 from "@/assets/doc_test060.jpg";
 import img2 from "@/assets/doc_test063.jpg";
 import img1 from "@/assets/doc_test068.jpg";
-import { getSquare, getCropImg } from "@/utils";
+import { getSquare, getCropImg, getImgRotate } from "@/utils";
 
 const img = [img1, img2, img3, img4, img5, img6];
 
@@ -41,6 +41,7 @@ interface State {
   cameraHeight: number;
   video: HTMLVideoElement | null;
   current: Document | null;
+  square: Square | null;
   currentPage: number;
   isDialog: boolean;
   isLoading: boolean;
@@ -67,6 +68,7 @@ export const useStore = defineStore("common", {
       cameraHeight: 0,
       video: null,
       current: null,
+      square: null,
       currentPage: 1,
       isLoading: true,
       isFlash: false,
@@ -119,7 +121,7 @@ export const useStore = defineStore("common", {
     },
     // ----------
     setDocuments() {
-      for (let i = 0; i < 6; i++) {
+      for (let i = 0; i < 1; i++) {
         const m = new Image();
         m.src = img[i];
         m.onload = async () => {
@@ -135,6 +137,10 @@ export const useStore = defineStore("common", {
               deg: 0,
             };
             this.documents.push(t);
+
+            if (i === 0) {
+              this.current = t;
+            }
           }
         };
       }

@@ -3,7 +3,6 @@ import { watch } from "vue";
 import ToastProvider from "@/components/providers/ToastProvider.vue";
 import DialogProvider from "@/components/providers/DialogProvider.vue";
 import Loader from "@/components/common/Loader.vue";
-import Flash from "@/components/common/Flash.vue";
 import { useStore } from "@/store";
 import { storeToRefs } from "pinia";
 import { useRouter } from "vue-router";
@@ -14,37 +13,35 @@ const HEIGHT = `${window.innerHeight}px`;
 
 const store = useStore();
 const router = useRouter();
-const { isLoading, isLoader, isCapture } = storeToRefs(store);
+const { isLoading, isLoader, current } = storeToRefs(store);
 
 const onLoadedModel = async () => {
   await setModel();
   isLoading.value = false;
-  router.push({
-    name: constants.detector.name,
-    // params: {
-    //   id: "test1",
-    // },
-  });
+  // router.push({
+  //   name: constants.detector.name,
+  //   params: {
+  //     id: "test1",
+  //   },
+  // });
 
   await store.setDocuments();
 };
 onLoadedModel();
 
-// watch(store.documents, () => {
-//   if (store.documents.length > 5) {
-//     router.push({
-//       name: constants.edit.name,
-//       params: {
-//         id: "test1",
-//       },
-//     });
-//   }
-// });
+watch(current, () => {
+  router.push({
+    name: constants.edit.name,
+    params: {
+      id: "test1",
+    },
+  });
+});
 </script>
 
 <template>
   <main>
-    <Flash v-show="isCapture" />
+    <!-- <Flash v-show="isCapture" /> -->
     <Loader v-show="isLoader" />
     <ToastProvider>
       <DialogProvider>
