@@ -18,25 +18,25 @@ const { isLoading, isLoader, current } = storeToRefs(store);
 const onLoadedModel = async () => {
   await setModel();
   isLoading.value = false;
-  // router.push({
-  //   name: constants.detector.name,
-  //   params: {
-  //     id: "test1",
-  //   },
-  // });
-
-  await store.setDocuments();
-};
-onLoadedModel();
-
-watch(current, () => {
   router.push({
-    name: constants.edit.name,
+    name: constants.detector.name,
     params: {
       id: "test1",
     },
   });
-});
+
+  // await store.setDocuments();
+};
+onLoadedModel();
+
+// watch(current, () => {
+//   router.push({
+//     name: constants.edit.name,
+//     params: {
+//       id: "test1",
+//     },
+//   });
+// });
 </script>
 
 <template>

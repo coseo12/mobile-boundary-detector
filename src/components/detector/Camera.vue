@@ -14,7 +14,7 @@ import {
 let RECT_WIDTH = 0;
 let RECT_HEIGHT = 0;
 let REQUEST_ANIMATION_FRAME = 0;
-let DETECT_COUNT = 3;
+let DETECT_COUNT = 0;
 let MAX_DETECT_COUNT = 0;
 let IS_DETECT = false;
 
@@ -33,8 +33,8 @@ const VIDEO_WIDTH = 540;
 const VIDEO_HEIGHT = 960;
 
 const DETECT_RESOLUTION = {
-  WIDTH: 1440,
-  HEIGHT: 2560,
+  WIDTH: 2560,
+  HEIGHT: 1440,
 };
 
 const CAPTURE_RESOLUTION = {
@@ -64,12 +64,10 @@ const getStream = async () => {
       video: {
         facingMode: "environment",
         width: {
-          ideal: isCapture ? CAPTURE_RESOLUTION.WIDTH : DETECT_RESOLUTION.WIDTH,
+          ideal: DETECT_RESOLUTION.WIDTH,
         },
         height: {
-          ideal: isCapture
-            ? CAPTURE_RESOLUTION.HEIGHT
-            : DETECT_RESOLUTION.HEIGHT,
+          ideal: DETECT_RESOLUTION.HEIGHT,
         },
       },
     };

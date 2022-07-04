@@ -62,6 +62,8 @@ const setCtx = async () => {
 };
 
 const handlePathSelect = (e: TouchEvent) => {
+  e.preventDefault();
+  e.stopPropagation();
   if (!canvas.value || !ctx.value || !current.value) {
     return;
   }
@@ -112,6 +114,8 @@ const handlePathSelect = (e: TouchEvent) => {
 };
 
 const handlePathResize = (e: TouchEvent) => {
+  e.preventDefault();
+  e.stopPropagation();
   if (!IS_CIRCLE_RESIZE && !IS_FIT_RESIZE) {
     return;
   }
@@ -188,7 +192,9 @@ const handlePathResize = (e: TouchEvent) => {
   setCtx();
 };
 
-const handlePathResized = () => {
+const handlePathResized = (e: TouchEvent) => {
+  e.preventDefault();
+  e.stopPropagation();
   IS_CIRCLE_RESIZE = false;
   IS_FIT_RESIZE = false;
 };
