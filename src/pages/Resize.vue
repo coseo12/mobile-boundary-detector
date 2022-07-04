@@ -8,7 +8,7 @@ const HEIGHT = `${window.innerHeight}px`;
 
 <template>
   <section class="resize" aria-label="Resized">
-    <TopBtn class="top" />
+    <!-- <TopBtn class="top" /> -->
     <ResizeView class="middle" />
     <BottomBtn class="bottom" />
   </section>
@@ -16,20 +16,28 @@ const HEIGHT = `${window.innerHeight}px`;
 
 <style lang="scss" scoped>
 .resize {
+  position: relative;
   width: 100%;
   height: v-bind("HEIGHT");
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  .top {
-    height: 60px;
-  }
+  // .top {
+  //   position: absolute;
+  //   top: 0;
+  //   left: 0;
+  //   height: 60px;
+  //   background-color: $lomin-deep-black;
+  // }
 
   .middle {
-    height: calc(100% - 120px);
+    height: calc(100%);
   }
 
   .bottom {
+    position: absolute;
+    bottom: 0;
+    left: 0;
     height: 60px;
   }
 }

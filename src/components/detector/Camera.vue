@@ -149,8 +149,8 @@ const setBoundingClientRect = () => {
   cameraWidth.value = videoRect.width;
   cameraHeight.value = videoRect.height;
 
-  // video.value.width = RECT_WIDTH;
-  video.value.height = RECT_HEIGHT;
+  video.value.width = RECT_WIDTH;
+  // video.value.height = RECT_HEIGHT;
 
   const videoFitRect = video.value.getBoundingClientRect();
   ctx.value = canvas.value.getContext("2d");

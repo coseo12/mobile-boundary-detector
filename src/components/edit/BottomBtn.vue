@@ -5,7 +5,7 @@ import { useStore } from "@/store";
 import { storeToRefs } from "pinia";
 
 const store = useStore();
-const { current } = storeToRefs(store);
+const { current, currentPage, documents } = storeToRefs(store);
 const router = useRouter();
 
 const onDetector = () => {
@@ -15,8 +15,13 @@ const onDetector = () => {
 };
 
 const onNext = () => {
+  const find = documents.value[currentPage.value];
+  if (!find) {
+    store.onToast("마지막 이미지입니다.");
+    return;
+  }
   router.push({
-    name: constants.resize.name,
+    name: constants.edit.name,
     params: {
       id: current.value?.id || "",
     },

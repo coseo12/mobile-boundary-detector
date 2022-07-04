@@ -152,10 +152,13 @@ export const drawDetectLines = async (
   ctx.restore();
 };
 
-export const getDetectCirclePath = (square: Square, options: Options) => {
+export const getDetectCirclePath = (
+  square: Square,
+  options: Options,
+  round: number = 13
+) => {
   const xRatio = options?.xRatio || 1;
   const yRatio = options?.yRatio || 1;
-  const round = 8;
   const deg = 2 * Math.PI;
   const path = [];
   const circle = new Path2D();
@@ -205,7 +208,11 @@ const getPosition = (
   return { cx, cy, x, y };
 };
 
-export const getDetectFitPath = async (square: Square, options: Options) => {
+export const getDetectFitPath = async (
+  square: Square,
+  options: Options,
+  size: number = 8
+) => {
   const xRatio = options?.xRatio || 1;
   const yRatio = options?.yRatio || 1;
   const path = [];
@@ -213,20 +220,19 @@ export const getDetectFitPath = async (square: Square, options: Options) => {
   let startY = square.cy * yRatio;
   let endX = 0;
   let endY = 0;
-
   for (const [_, v] of Object.entries(square.lines)) {
     endX = v.dx * xRatio;
     endY = v.dy * yRatio;
 
     const { cx, cy, x, y } = getPosition(startX, endX, startY, endY);
-    const rcx = cx + 3;
-    const rcy = cy + 3;
-    const rx = x + 3;
-    const ry = y + 3;
-    const lcx = cx - 3;
-    const lcy = cy - 3;
-    const lx = x - 3;
-    const ly = y - 3;
+    const rcx = cx + size;
+    const rcy = cy + size;
+    const rx = x + size;
+    const ry = y + size;
+    const lcx = cx - size;
+    const lcy = cy - size;
+    const lx = x - size;
+    const ly = y - size;
 
     const fit = new Path2D();
     fit.moveTo(rcx, rcy);
@@ -244,14 +250,14 @@ export const getDetectFitPath = async (square: Square, options: Options) => {
   endY = square.cy * yRatio;
 
   const { cx, cy, x, y } = getPosition(startX, endX, startY, endY);
-  const rcx = cx + 3;
-  const rcy = cy + 3;
-  const rx = x + 3;
-  const ry = y + 3;
-  const lcx = cx - 3;
-  const lcy = cy - 3;
-  const lx = x - 3;
-  const ly = y - 3;
+  const rcx = cx + size;
+  const rcy = cy + size;
+  const rx = x + size;
+  const ry = y + size;
+  const lcx = cx - size;
+  const lcy = cy - size;
+  const lx = x - size;
+  const ly = y - size;
   const fit = new Path2D();
   fit.moveTo(rcx, rcy);
   fit.lineTo(rx, ry);
