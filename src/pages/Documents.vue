@@ -8,7 +8,7 @@ const HEIGHT = `${window.innerHeight}px`;
 
 <template>
   <section aria-label="Documents" class="documents">
-    <TopBtn />
+    <TopBtn class="top" />
     <ImgList />
     <BottomBtn />
   </section>
@@ -24,14 +24,12 @@ const HEIGHT = `${window.innerHeight}px`;
   justify-content: space-between;
   background-color: $lomin-deep-black;
 
-  ::-webkit-scrollbar {
-    width: 0px;
-  }
-  ::-webkit-scrollbar-thumb {
-    background: transparent;
-  }
-  ::-webkit-scrollbar-thumb:hover {
-    background: transparent;
+  .top {
+    position: sticky;
+    top: 0;
+    left: 0;
+    z-index: 2;
+    background-color: $lomin-deep-black;
   }
 }
 </style>

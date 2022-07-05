@@ -3,14 +3,14 @@ import { useStore } from "@/store";
 import { storeToRefs } from "pinia";
 
 const store = useStore();
-const { isDrag } = storeToRefs(store);
+const { isDrag, documents, isLoader, selection } = storeToRefs(store);
 
-const onDelete = () => {};
+const onSave = () => {};
 </script>
 
 <template>
   <article v-show="isDrag" class="bottom-btn">
-    <button type="button" class="delete" @touchend="onDelete">삭제</button>
+    <button type="button" class="delete" @touchend="onSave">저장</button>
   </article>
 </template>
 

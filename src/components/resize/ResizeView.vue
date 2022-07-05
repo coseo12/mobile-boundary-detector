@@ -77,6 +77,11 @@ const setCtx = async () => {
   canvas.value.height = height;
 
   drawDetectLines(ctx.value, square.value, { xRatio, yRatio });
+  ctx.value.save();
+  ctx.value.globalAlpha = 0.3;
+  ctx.value.fillStyle = "#f34a00";
+  ctx.value.fill();
+  ctx.value.restore();
 
   drawPath(ctx.value, circle);
   drawPath(ctx.value, fits, "line");

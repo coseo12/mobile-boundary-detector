@@ -12,7 +12,8 @@ export type Icons =
   | "back"
   | "search"
   | "share"
-  | "none";
+  | "none"
+  | "order";
 
 interface Props {
   icons: Icons;
@@ -203,6 +204,33 @@ const props = defineProps<Props>();
         fill="currentColor"
       />
     </svg>
+
+    <svg
+      v-else-if="props.icons === 'order'"
+      xmlns="http://www.w3.org/2000/svg"
+      className="h-5 w-5"
+      viewBox="0 0 20 20"
+      fill="currentColor"
+    >
+      <path
+        fillRule="evenodd"
+        d="M10 3a1 1 0 01.707.293l3 3a1 1 0 01-1.414 1.414L10 5.414 7.707 7.707a1 1 0 01-1.414-1.414l3-3A1 1 0 0110 3zm-3.707 9.293a1 1 0 011.414 0L10 14.586l2.293-2.293a1 1 0 011.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
+        clipRule="evenodd"
+      />
+    </svg>
+    <!-- <svg
+      v-else-if="props.icons === 'document'"
+      xmlns="http://www.w3.org/2000/svg"
+      class="h-5 w-5"
+      viewBox="0 0 20 20"
+      fill="currentColor"
+    >
+      <path
+        fill-rule="evenodd"
+        d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"
+        clip-rule="evenodd"
+      />
+    </svg> -->
   </button>
 </template>
 

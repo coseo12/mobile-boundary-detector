@@ -8,7 +8,26 @@ import img2 from "@/assets/doc_test063.jpg";
 import img1 from "@/assets/doc_test068.jpg";
 import { getSquare, getCropImg, getImgRotate } from "@/utils";
 
-const img = [img1, img2, img3, img4, img5, img6];
+const img = [
+  img1,
+  img2,
+  img3,
+  img4,
+  img5,
+  img6,
+  img1,
+  img2,
+  img3,
+  img4,
+  img5,
+  img6,
+  img1,
+  img2,
+  img3,
+  img4,
+  img5,
+  img6,
+];
 
 type DialogType = "alert" | "confirm";
 
@@ -43,6 +62,7 @@ interface State {
   current: Document | null;
   square: Square | null;
   currentPage: number;
+  selection: string[];
   isDialog: boolean;
   isLoading: boolean;
   isLoader: boolean;
@@ -60,6 +80,7 @@ export const useStore = defineStore("common", {
       documents: [],
       dialogText: [],
       dialogLabels: [],
+      selection: [],
       dialogType: "alert",
       dialogConfirmCallback: null,
       dialogCancelCallback: null,
