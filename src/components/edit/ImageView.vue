@@ -5,7 +5,7 @@ import { useRouter, useRoute } from "vue-router";
 import { constants } from "@/router";
 import { useStore } from "@/store";
 import { storeToRefs } from "pinia";
-import { getImgRotate, getSquare, getCropImg } from "@/utils";
+import { getImgRotate, getSquare, getCopyImg } from "@/utils";
 
 let TRANSLATE = 0;
 let IS_SWIPE = false;
@@ -223,7 +223,7 @@ onMounted(() => {
         @animationend="animateEnd"
       >
         <div ref="cards" v-for="d in documents" class="card">
-          <img :src="d.cropImg.src" />
+          <img :src="getCopyImg(d.cropImg).src" />
         </div>
       </div>
     </div>

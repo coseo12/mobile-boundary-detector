@@ -98,7 +98,7 @@ export const useStore = defineStore("common", {
       isToast: false,
       isLoader: false,
       isCapture: false,
-      isDrag: false,
+      isDrag: true,
     };
   },
   actions: {

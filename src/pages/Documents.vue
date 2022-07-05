@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import TopBtn from "@/components/documents/TopBtn.vue";
-import BottomBtn from "@/components/documents/BottomBtn.vue";
+// import BottomBtn from "@/components/documents/BottomBtn.vue";
 import ImgList from "@/components/documents/ImgList.vue";
 
 const HEIGHT = `${window.innerHeight}px`;
@@ -10,7 +10,7 @@ const HEIGHT = `${window.innerHeight}px`;
   <section aria-label="Documents" class="documents">
     <TopBtn class="top" />
     <ImgList />
-    <BottomBtn />
+    <!-- <BottomBtn /> -->
   </section>
 </template>
 

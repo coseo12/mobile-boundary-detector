@@ -16,7 +16,8 @@ const onSave = () => {};
 
 <style lang="scss" scoped>
 .bottom-btn {
-  position: absolute;
+  position: sticky;
+  left: 0;
   bottom: 0;
   width: 100%;
   height: 60px;

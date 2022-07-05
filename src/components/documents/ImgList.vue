@@ -1,26 +1,40 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { ref, computed } from "vue";
 import { useStore } from "@/store";
 import { storeToRefs } from "pinia";
+import { getCopyImg } from "@/utils";
 
 let CHECK_SCROLL = false;
 let TIMEOUT: NodeJS.Timeout | null = null;
+let START_X = 0;
+let START_Y = 0;
 
 const store = useStore();
 const { documents, isDrag, selection } = storeToRefs(store);
 
+const wrap = ref<HTMLDivElement | null>(null);
+
 const list = computed(() => {
   return documents.value.map((d) => {
-    const cloneImg = d.img.cloneNode(true) as HTMLImageElement;
+    const cloneImg = getCopyImg(d.img);
     const id = d.id;
     return { img: cloneImg, id, check: selection.value.includes(id) };
   });
 });
 
 const onCheckTouch = (e: TouchEvent) => {
+  e.preventDefault();
+  e.stopPropagation();
   TIMEOUT = setTimeout(() => {
     CHECK_SCROLL = true;
   }, 300);
+  if (!wrap.value) {
+    return;
+  }
+  START_X = e.touches[0].clientX;
+  START_Y = e.touches[0].clientY;
+  //  e.target.dataset.id
+  console.log("start", e);
 };
 
 const onCheck = (id: string) => {
@@ -31,28 +45,40 @@ const onCheck = (id: string) => {
   if (TIMEOUT) {
     clearTimeout(TIMEOUT);
   }
-  if (isDrag.value) {
+  if (!isDrag.value) {
+    const isId = selection.value.includes(id);
+    if (isId) {
+      selection.value = selection.value.filter((f) => f !== id);
+    } else {
+      selection.value.push(id);
+    }
+    return;
+  } else {
+    console.log("drag?");
+  }
+};
+
+const onTouchMove = (e: TouchEvent) => {
+  e.preventDefault();
+  e.stopPropagation();
+  if (!isDrag.value) {
     return;
   }
-  const isId = selection.value.includes(id);
-  if (isId) {
-    selection.value = selection.value.filter((f) => f !== id);
-  } else {
-    selection.value.push(id);
-  }
+  console.log("move!!");
 };
 </script>
 
 <template>
   <article class="img-list">
-    <div class="card-wrap">
+    <div ref="wrap" class="card-wrap">
       <div
         v-for="(item, idx) in list"
         class="card"
         @touchstart="onCheckTouch"
+        @touchmove="onTouchMove"
         @touchend="onCheck(item.id)"
       >
-        <img :src="item.img.src" alt="img" />
+        <img :src="item.img.src" alt="img" :data-id="item.id" />
         <p v-if="!isDrag" class="name">{{ item.id }}</p>
         <div v-if="isDrag" class="idx">{{ idx + 1 }}</div>
         <div v-if="!isDrag" class="checkbox">
@@ -78,6 +104,12 @@ const onCheck = (id: string) => {
 <style lang="scss" scoped>
 .img-list {
   height: 100%;
+
+  .preview {
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
 
   .card-wrap {
     display: flex;

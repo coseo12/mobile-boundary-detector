@@ -7,7 +7,7 @@ import { storeToRefs } from "pinia";
 
 const store = useStore();
 const router = useRouter();
-const { isFlash, flashMode } = storeToRefs(store);
+const { isFlash, flashMode, documents } = storeToRefs(store);
 
 const onFlash = () => {
   if (!isFlash.value) {
@@ -16,6 +16,10 @@ const onFlash = () => {
 };
 
 const onDocuments = () => {
+  if (documents.value.length === 0) {
+    store.onToast("문서가 존재하지 않습니다.");
+    return;
+  }
   router.push(constants.documents.path);
 };
 </script>
