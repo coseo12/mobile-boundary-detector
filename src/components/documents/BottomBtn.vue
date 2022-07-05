@@ -1,12 +1,15 @@
 <script setup lang="ts">
-import { useRouter } from "vue-router";
-import { constants } from "@/router";
+import { useStore } from "@/store";
+import { storeToRefs } from "pinia";
+
+const store = useStore();
+const { isDrag } = storeToRefs(store);
 
 const onDelete = () => {};
 </script>
 
 <template>
-  <article class="bottom-btn">
+  <article v-show="isDrag" class="bottom-btn">
     <button type="button" class="delete" @touchend="onDelete">삭제</button>
   </article>
 </template>

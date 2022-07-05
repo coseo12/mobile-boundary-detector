@@ -49,6 +49,7 @@ interface State {
   isFlash: boolean;
   isToast: boolean;
   isCapture: boolean;
+  isDrag: boolean;
 }
 
 export const useStore = defineStore("common", {
@@ -76,6 +77,7 @@ export const useStore = defineStore("common", {
       isToast: false,
       isLoader: false,
       isCapture: false,
+      isDrag: false,
     };
   },
   actions: {
@@ -121,7 +123,7 @@ export const useStore = defineStore("common", {
     },
     // ----------
     setDocuments() {
-      for (let i = 0; i < 1; i++) {
+      for (let i = 0; i < 6; i++) {
         const m = new Image();
         m.src = img[i];
         m.onload = async () => {

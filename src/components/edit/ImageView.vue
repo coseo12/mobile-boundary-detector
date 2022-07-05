@@ -97,11 +97,15 @@ const onDelete = () => {
 };
 
 const onSwipeStart = (e: TouchEvent) => {
+  e.preventDefault();
+  e.stopPropagation();
   IS_SWIPE = true;
   START_X = e.changedTouches[0].clientX;
 };
 
-const onSwipeEnd = () => {
+const onSwipeEnd = (e: TouchEvent) => {
+  e.preventDefault();
+  e.stopPropagation();
   IS_SWIPE = false;
   if (!wrap.value || cards.value.length === 0) {
     return;
@@ -149,6 +153,8 @@ const animateEnd = () => {
 };
 
 const onSwipe = (e: TouchEvent) => {
+  e.preventDefault();
+  e.stopPropagation();
   if (!IS_SWIPE || !wrap.value || cards.value.length === 0) {
     return;
   }
