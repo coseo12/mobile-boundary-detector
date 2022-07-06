@@ -33,8 +33,8 @@ const VIDEO_WIDTH = 540;
 const VIDEO_HEIGHT = 960;
 
 const DETECT_RESOLUTION = {
-  WIDTH: 2560,
-  HEIGHT: 1440,
+  WIDTH: 1920,
+  HEIGHT: 1080,
 };
 
 const IS_MOBILE = navigator.userAgent.toLocaleLowerCase().includes("mobile");

@@ -8,11 +8,14 @@ let CHECK_SCROLL = false;
 let TIMEOUT: NodeJS.Timeout | null = null;
 let START_X = 0;
 let START_Y = 0;
+let TARGET: HTMLDivElement | null = null;
+let HOVER: HTMLDivElement | null = null;
 
 const store = useStore();
 const { documents, isDrag, selection } = storeToRefs(store);
 
 const wrap = ref<HTMLDivElement | null>(null);
+const cards = ref<HTMLDivElement[]>([]);
 
 const list = computed(() => {
   return documents.value.map((d) => {
@@ -25,16 +28,33 @@ const list = computed(() => {
 const onCheckTouch = (e: TouchEvent) => {
   e.preventDefault();
   e.stopPropagation();
-  TIMEOUT = setTimeout(() => {
-    CHECK_SCROLL = true;
-  }, 300);
-  if (!wrap.value) {
-    return;
+  if (!isDrag.value) {
+    TIMEOUT = setTimeout(() => {
+      CHECK_SCROLL = true;
+    }, 300);
+  } else {
+    TIMEOUT = setTimeout(() => {
+      CHECK_SCROLL = true;
+      TARGET?.classList.add("on");
+    }, 1000);
+
+    if (!wrap.value) {
+      return;
+    }
+    const rect = wrap.value.getBoundingClientRect();
+    const clientX = e.touches[0].clientX;
+    const clientY = e.touches[0].clientY;
+    const offsetX = rect.left;
+    const offsetY = rect.top;
+    START_X = clientX - offsetX;
+    START_Y = clientY - offsetY;
+    const el = e.target as HTMLElement;
+    const card = el.closest(".card") as HTMLDivElement;
+    if (!card) {
+      return;
+    }
+    TARGET = card;
   }
-  START_X = e.touches[0].clientX;
-  START_Y = e.touches[0].clientY;
-  //  e.target.dataset.id
-  console.log("start", e);
 };
 
 const onCheck = (id: string) => {
@@ -45,40 +65,77 @@ const onCheck = (id: string) => {
   if (TIMEOUT) {
     clearTimeout(TIMEOUT);
   }
-  if (!isDrag.value) {
-    const isId = selection.value.includes(id);
-    if (isId) {
-      selection.value = selection.value.filter((f) => f !== id);
-    } else {
-      selection.value.push(id);
-    }
+  if (isDrag.value) {
     return;
-  } else {
-    console.log("drag?");
   }
+  const isId = selection.value.includes(id);
+  if (isId) {
+    selection.value = selection.value.filter((f) => f !== id);
+  } else {
+    selection.value.push(id);
+  }
+};
+
+const onCancel = () => {
+  TARGET?.classList.remove("on");
+  HOVER?.classList.remove("hover");
+
+  const findTarget = documents.value.find((f) => f.id === TARGET?.dataset.id);
+  const findHover = documents.value.find((f) => f.id === HOVER?.dataset.id);
+  const targetIdx = Number(TARGET?.dataset.idx) || 0;
+  const hoverIdx = Number(HOVER?.dataset.idx) || 0;
+
+  TARGET = null;
+  HOVER = null;
+  if (!(findTarget && findHover)) {
+    return;
+  }
+  documents.value.splice(targetIdx, 1, findHover);
+  documents.value.splice(hoverIdx, 1, findTarget);
 };
 
 const onTouchMove = (e: TouchEvent) => {
   e.preventDefault();
   e.stopPropagation();
-  if (!isDrag.value) {
+  if (!isDrag.value || !CHECK_SCROLL) {
     return;
   }
-  console.log("move!!");
+  HOVER?.classList.remove("hover");
+  const item = document.elementFromPoint(
+    e.touches[0].clientX,
+    e.touches[0].clientY
+  );
+  if (!item) {
+    HOVER = null;
+    return;
+  }
+  const card = item.closest(".card") as HTMLDivElement;
+  if (!card) {
+    HOVER = null;
+    return;
+  }
+  if (TARGET?.dataset.id !== card.dataset.id) {
+    card.classList.add("hover");
+  }
+  HOVER = card;
 };
 </script>
 
 <template>
-  <article class="img-list">
+  <article class="img-list" @touchend="onCancel">
     <div ref="wrap" class="card-wrap">
       <div
         v-for="(item, idx) in list"
+        ref="cards"
         class="card"
+        :data-id="item.id"
+        :data-idx="idx"
         @touchstart="onCheckTouch"
         @touchmove="onTouchMove"
         @touchend="onCheck(item.id)"
+        @touchcancel="onCancel()"
       >
-        <img :src="item.img.src" alt="img" :data-id="item.id" />
+        <img :src="item.img.src" alt="img" />
         <p v-if="!isDrag" class="name">{{ item.id }}</p>
         <div v-if="isDrag" class="idx">{{ idx + 1 }}</div>
         <div v-if="!isDrag" class="checkbox">
@@ -130,6 +187,16 @@ const onTouchMove = (e: TouchEvent) => {
     .card {
       position: relative;
       padding: 5px;
+
+      &.on {
+        opacity: 0.3;
+      }
+
+      &.hover {
+        img {
+          border: 2px solid $lomin-deep-orange;
+        }
+      }
 
       img {
         width: calc(50vw - 10px);
