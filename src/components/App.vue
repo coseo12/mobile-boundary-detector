@@ -13,7 +13,7 @@ const HEIGHT = `${window.innerHeight}px`;
 
 const store = useStore();
 const router = useRouter();
-const { isLoading, isLoader, current } = storeToRefs(store);
+const { isLoading, isLoader } = storeToRefs(store);
 
 const onLoadedModel = async () => {
   await setModel();

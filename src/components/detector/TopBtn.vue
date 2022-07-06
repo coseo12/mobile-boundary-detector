@@ -20,6 +20,7 @@ const onDocuments = () => {
     store.onToast("문서가 존재하지 않습니다.");
     return;
   }
+  store.isDrag = false;
   router.push(constants.documents.path);
 };
 </script>

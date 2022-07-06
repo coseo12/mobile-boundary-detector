@@ -1,33 +1,33 @@
 import { defineStore } from "pinia";
 
-import img6 from "@/assets/doc_test017.jpg";
-import img5 from "@/assets/doc_test019.jpg";
-import img4 from "@/assets/doc_test056.jpg";
-import img3 from "@/assets/doc_test060.jpg";
-import img2 from "@/assets/doc_test063.jpg";
-import img1 from "@/assets/doc_test068.jpg";
-import { getSquare, getCropImg, getImgRotate } from "@/utils";
+// import img6 from "@/assets/doc_test017.jpg";
+// import img5 from "@/assets/doc_test019.jpg";
+// import img4 from "@/assets/doc_test056.jpg";
+// import img3 from "@/assets/doc_test060.jpg";
+// import img2 from "@/assets/doc_test063.jpg";
+// import img1 from "@/assets/doc_test068.jpg";
+// import { getSquare, getCropImg } from "@/utils";
 
-const img = [
-  img1,
-  img2,
-  img3,
-  img4,
-  img5,
-  img6,
-  img1,
-  img2,
-  img3,
-  img4,
-  img5,
-  img6,
-  img1,
-  img2,
-  img3,
-  img4,
-  img5,
-  img6,
-];
+// const img = [
+//   img1,
+//   img2,
+//   img3,
+//   img4,
+//   img5,
+//   img6,
+//   img1,
+//   img2,
+//   img3,
+//   img4,
+//   img5,
+//   img6,
+//   img1,
+//   img2,
+//   img3,
+//   img4,
+//   img5,
+//   img6,
+// ];
 
 type DialogType = "alert" | "confirm";
 
@@ -98,7 +98,7 @@ export const useStore = defineStore("common", {
       isToast: false,
       isLoader: false,
       isCapture: false,
-      isDrag: true,
+      isDrag: false,
     };
   },
   actions: {
@@ -143,30 +143,30 @@ export const useStore = defineStore("common", {
       };
     },
     // ----------
-    setDocuments() {
-      for (let i = 0; i < 6; i++) {
-        const m = new Image();
-        m.src = img[i];
-        m.onload = async () => {
-          const square = await getSquare(m);
-          if (square) {
-            const t: Document = {
-              id: `test${i + 1}`,
-              img: m,
-              square,
-              circlePath: [],
-              fitPath: [],
-              cropImg: await getCropImg(m, square),
-              deg: 0,
-            };
-            this.documents.push(t);
+    // setDocuments() {
+    //   for (let i = 0; i < 6; i++) {
+    //     const m = new Image();
+    //     m.src = img[i];
+    //     m.onload = async () => {
+    //       const square = await getSquare(m);
+    //       if (square) {
+    //         const t: Document = {
+    //           id: `test${i + 1}`,
+    //           img: m,
+    //           square,
+    //           circlePath: [],
+    //           fitPath: [],
+    //           cropImg: await getCropImg(m, square),
+    //           deg: 0,
+    //         };
+    //         this.documents.push(t);
 
-            if (i === 0) {
-              this.current = t;
-            }
-          }
-        };
-      }
-    },
+    //         if (i === 0) {
+    //           this.current = t;
+    //         }
+    //       }
+    //     };
+    //   }
+    // },
   },
 });

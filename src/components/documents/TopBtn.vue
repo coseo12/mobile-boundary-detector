@@ -110,7 +110,8 @@ const onShare = () => {
     <RoundBtn icons="back" @touchend="onBack" />
     <p>내 문서</p>
     <div class="btn-wrap">
-      <RoundBtn :icons="isDrag ? 'document' : 'order'" @touchend="onDrag" />
+      <RoundBtn v-if="isDrag" icons="document" @touchend="onDrag" />
+      <RoundBtn v-if="!isDrag" icons="order" @touchend="onDrag" />
       <RoundBtn v-if="!isDrag" icons="delete" @touchend="onDelete" />
       <RoundBtn v-if="!isDrag" icons="share" @touchend="onShareCheck" />
     </div>
