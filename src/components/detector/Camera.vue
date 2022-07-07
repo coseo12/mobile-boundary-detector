@@ -136,8 +136,8 @@ const setBoundingClientRect = () => {
   const rect = wrapper.value.getBoundingClientRect();
   const videoRect = video.value.getBoundingClientRect();
 
-  const p = document.querySelector(".tmp")!;
-  p.innerHTML = `${videoRect.width} * ${videoRect.height}`;
+  // const p = document.querySelector(".tmp")!;
+  // p.innerHTML = `${videoRect.width} * ${videoRect.height}`;
 
   RECT_WIDTH = rect.width;
   RECT_HEIGHT = rect.height;
@@ -220,12 +220,12 @@ onUnmounted(() => {
   .float {
     position: absolute;
     left: 0;
-    bottom: -10px;
+    bottom: 15px;
   }
 
   .copyright {
     position: absolute;
-    bottom: 75px;
+    bottom: 0px;
     opacity: 0.5;
   }
 

@@ -159,8 +159,8 @@ export const useStore = defineStore("common", {
     //           cropImg: await getCropImg(m, square),
     //           deg: 0,
     //         };
-    //         this.documents.push(t);
 
+    //         this.documents.push(t);
     //         if (i === 0) {
     //           this.current = t;
     //         }

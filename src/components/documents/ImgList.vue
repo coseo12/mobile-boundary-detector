@@ -19,7 +19,7 @@ const cards = ref<HTMLDivElement[]>([]);
 
 const list = computed(() => {
   return documents.value.map((d) => {
-    const cloneImg = getCopyImg(d.img);
+    const cloneImg = getCopyImg(d.cropImg);
     const id = d.id;
     return { img: cloneImg, id, check: selection.value.includes(id) };
   });

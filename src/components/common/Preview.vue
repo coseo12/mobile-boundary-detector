@@ -4,6 +4,7 @@ import { useStore } from "@/store";
 import { storeToRefs } from "pinia";
 import { useRouter } from "vue-router";
 import { constants } from "@/router";
+import { getCopyImg } from "@/utils";
 
 interface Props {
   isPush?: boolean;
@@ -80,7 +81,7 @@ watch(currentPage, () => {
       @touchend="onDocuments(d.id, idx)"
     >
       <div class="badge">{{ idx + 1 }}</div>
-      <img :src="d.img.src" alt="img" />
+      <img :src="getCopyImg(d.cropImg).src" alt="img" />
     </div>
   </div>
 </template>

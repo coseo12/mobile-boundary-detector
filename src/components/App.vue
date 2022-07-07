@@ -24,8 +24,22 @@ const onLoadedModel = async () => {
       id: "test1",
     },
   });
+
+  // await store.setDocuments();
 };
 onLoadedModel();
+
+// watch(current, () => {
+//   console.log("watch");
+//   if (current.value) {
+//     router.push({
+//       name: constants.edit.name,
+//       params: {
+//         id: "test1",
+//       },
+//     });
+//   }
+// });
 </script>
 
 <template>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useRouter, useRoute } from "vue-router";
 import { constants } from "@/router";
-import { getCropImg } from "@/utils";
+import { getCropImg, getImgRotate } from "@/utils";
 import { useStore } from "@/store";
 import { storeToRefs } from "pinia";
 
@@ -18,6 +18,9 @@ const onSave = async () => {
     }
     current.value.square = square.value;
     current.value.cropImg = await getCropImg(current.value.img, square.value);
+    for (let i = 0; i < Math.abs(current.value.deg) / 90; i++) {
+      current.value.cropImg = await getImgRotate(current.value.cropImg);
+    }
     router.push({
       name: constants.edit.name,
       params: {

@@ -5,7 +5,7 @@ import { useRouter, useRoute } from "vue-router";
 import { constants } from "@/router";
 import { useStore } from "@/store";
 import { storeToRefs } from "pinia";
-import { getImgRotate, getSquare, getCopyImg } from "@/utils";
+import { getImgRotate, getCopyImg } from "@/utils";
 
 let TRANSLATE = 0;
 let IS_SWIPE = false;
@@ -42,22 +42,13 @@ const onRotate = async () => {
     if (!current.value) {
       return;
     }
-    const img = await getImgRotate(current.value.img);
+    // const img = await getImgRotate(current.value.img);
     const rotateCropImg = await getImgRotate(current.value.cropImg);
-    const square = await getSquare(img);
-    if (square) {
-      current.value.deg =
-        current.value.deg === -270 ? 0 : current.value.deg + -90;
-      documents.value[currentPage.value - 1].img = img;
-      documents.value[currentPage.value - 1].cropImg = rotateCropImg;
-      documents.value[currentPage.value - 1].square = square;
-      current.value = documents.value[currentPage.value - 1];
-    } else {
-      store.onDialog("alert", [
-        "회전에 실패했습니다.",
-        "재시도 또는 삭제 후 재촬영해주세요",
-      ]);
-    }
+    current.value.deg =
+      current.value.deg === -270 ? 0 : current.value.deg + -90;
+    // documents.value[currentPage.value - 1].img = img;
+    documents.value[currentPage.value - 1].cropImg = rotateCropImg;
+    current.value = documents.value[currentPage.value - 1];
     isLoader.value = false;
   }, 100);
 };

@@ -23,42 +23,85 @@ export const setModel = async () => {
   model = await load("./model/model.json");
 };
 
-let tmp = 0;
-
-const GPUMemoryConsole = (s: any) => {
-  console.log(
-    "detect",
-    s,
-    window.tf.memory().numBytesInGPU - tmp,
-    window.tf.memory().numBytesInGPUAllocated
-  );
-  tmp = window.tf.memory().numBytesInGPU;
+export const getRotatePosition = (x: number, y: number) => {
+  const pointer = {
+    x: y,
+    y: x,
+  };
+  return pointer;
 };
 
-// const getRotatePosition = (x: number, y: number) => {
-//   const r = (90 * Math.PI) / 180;
-//   const radian = Math.atan(x / y);
-//   const l = Math.sqrt(x * x + y * y);
-//   const v1 = l * Math.cos(radian);
-//   const v2 = l * Math.sin(radian);
-//   return {
-//     x: v1 * Math.cos(r) - v2 * Math.sin(r) * -1,
-//     y: v1 * Math.sin(r) + v2 * Math.cos(r),
-//   };
-// };
-
 export const getRotateSqure = async (square: Square) => {
-  const s: Square = {
-    cx: square.cy,
-    cy: square.cx,
+  const { x, y } = getRotatePosition(square.cx, square.cy);
+  const s1: Square = {
+    cx: x,
+    cy: y,
     lines: [],
   };
-
   for (const l of square.lines) {
-    const p = { dx: l.dy, dy: l.dx };
-    s.lines.push(p);
+    const { x, y } = getRotatePosition(l.dx, l.dy);
+    const p = { dx: x, dy: y };
+    s1.lines.push(p);
   }
-  return s;
+
+  return s1;
+};
+
+export const getImgRotate = (img: HTMLImageElement) => {
+  const deg = -90 * (Math.PI / 180);
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d")!;
+  canvas.width = img.naturalHeight;
+  canvas.height = img.naturalWidth;
+  ctx.rotate(deg);
+  ctx.drawImage(img, canvas.height * -1, 0);
+  const imgEl = new Image();
+  imgEl.src = canvas.toDataURL("image/png");
+  return imgEl;
+};
+
+export const getCropImg = (img: HTMLImageElement, square: Square) => {
+  const clipCanvas = document.createElement("canvas");
+  const clipCtx = clipCanvas.getContext("2d")!;
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d")!;
+  let cx = square.cx;
+  let cy = square.cy;
+  let cxMax = cx;
+  let cyMax = cy;
+  let cWidth = 0;
+  let cHeight = 0;
+
+  for (const s of square.lines) {
+    cx = s.dx < cx ? s.dx : cx;
+    cy = s.dy < cy ? s.dy : cy;
+    cxMax = s.dx > cxMax ? s.dx : cxMax;
+    cyMax = s.dy > cyMax ? s.dy : cyMax;
+  }
+  cWidth = cxMax - cx;
+  cHeight = cyMax - cy;
+
+  clipCanvas.width = img.naturalWidth;
+  clipCanvas.height = img.naturalHeight;
+  clipCtx.save();
+  clipCtx.beginPath();
+  clipCtx.moveTo(square.cx, square.cy);
+  for (const l of square.lines) {
+    clipCtx.lineTo(l.dx, l.dy);
+  }
+  clipCtx.closePath();
+  clipCtx.stroke();
+  clipCtx.clip();
+  clipCtx.drawImage(img, 0, 0);
+  clipCtx.restore();
+
+  canvas.width = cWidth;
+  canvas.height = cHeight;
+  ctx.drawImage(clipCanvas, cx, cy, cWidth, cHeight, 0, 0, cWidth, cHeight);
+
+  const imgEl = new Image();
+  imgEl.src = canvas.toDataURL();
+  return imgEl;
 };
 
 export const getSquare = async (imgEl: HTMLImageElement) => {
@@ -73,36 +116,6 @@ export const getSquare = async (imgEl: HTMLImageElement) => {
   const img = await window.tf.browser.fromPixels(cloneImg);
   const square = await detect(img, model);
   img.dispose();
-
-  // -------- Tensorflow.js memory leak!! ---------
-  // const canvas = document.createElement("canvas");
-  // const ctx = canvas.getContext("2d")!;
-  // canvas.width = 320;
-  // canvas.height = 320;
-  // ctx.drawImage(imgEl, 0, 0, canvas.width, canvas.height);
-
-  // const { data } = ctx.getImageData(0, 0, 320, 320);
-  // let rgb = [];
-  // let cnt = 1;
-  // let tensor = null;
-
-  // for (const v of data) {
-  //   if (cnt === 4) {
-  //     cnt = 1;
-  //     continue;
-  //   }
-  //   rgb.push(v);
-  //   cnt += 1;
-  // }
-
-  // tensor = window.tf.tensor(rgb);
-  // tensor = tensor.reshape([320, 320, 3]);
-
-  // const square = await detect(tensor, model);
-  // ------------------------------------------------
-
-  // --- Memory check ---
-  // GPUMemoryConsole(square);
 
   if (square.length !== 4) {
     return null;
@@ -256,15 +269,6 @@ export const getDetectFitPath = async (
 
     const { cx, cy, x, y } = getPosition(startX, endX, startY, endY, type);
 
-    // const rcx = cx + size;
-    // const rcy = cy + size;
-    // const rx = x + size;
-    // const ry = y + size;
-    // const lcx = cx - size;
-    // const lcy = cy - size;
-    // const lx = x - size;
-    // const ly = y - size;
-
     const fit = new Path2D();
 
     if (type === "line") {
@@ -272,11 +276,6 @@ export const getDetectFitPath = async (
       fit.lineTo(x, y);
     } else {
       fit.arc(cx, cy, round, 0, deg);
-      // fit.moveTo(rcx, rcy);
-      // fit.lineTo(rx, ry);
-      // fit.lineTo(lx, ly);
-      // fit.lineTo(lcx, lcy);
-      // fit.closePath();
     }
     path.push(fit);
 
@@ -287,14 +286,7 @@ export const getDetectFitPath = async (
   endY = square.cy * yRatio;
 
   const { cx, cy, x, y } = getPosition(startX, endX, startY, endY, type);
-  // const rcx = cx + size;
-  // const rcy = cy + size;
-  // const rx = x + size;
-  // const ry = y + size;
-  // const lcx = cx - size;
-  // const lcy = cy - size;
-  // const lx = x - size;
-  // const ly = y - size;
+
   const fit = new Path2D();
 
   if (type === "line") {
@@ -302,11 +294,6 @@ export const getDetectFitPath = async (
     fit.lineTo(x, y);
   } else {
     fit.arc(cx, cy, round, 0, deg);
-    // fit.moveTo(rcx, rcy);
-    // fit.lineTo(rx, ry);
-    // fit.lineTo(lx, ly);
-    // fit.lineTo(lcx, lcy);
-    // fit.closePath();
   }
   path.push(fit);
 
@@ -319,7 +306,6 @@ export const drawPath = async (
   type: "fill" | "line" = "fill",
   color: "orange" | "transparent" = "orange"
 ) => {
-  let cnt = 0;
   ctx.save();
   for (const p of paths) {
     if (type === "fill") {
@@ -330,70 +316,12 @@ export const drawPath = async (
       ctx.lineWidth = 5;
       ctx.strokeStyle =
         color === "orange" ? colorSet.orange : colorSet.transparent;
+
       ctx.stroke(p);
     }
-    cnt++;
   }
 
   ctx.restore();
-};
-
-export const getImgRotate = (img: HTMLImageElement) => {
-  const canvas = document.createElement("canvas");
-  const ctx = canvas.getContext("2d")!;
-  canvas.width = img.naturalHeight;
-  canvas.height = img.naturalWidth;
-  ctx.rotate((-90 * Math.PI) / 180);
-  ctx.drawImage(img, canvas.height * -1, 0);
-
-  const imgEl = new Image();
-  imgEl.src = canvas.toDataURL("image/png");
-  return imgEl;
-};
-
-export const getCropImg = (img: HTMLImageElement, square: Square) => {
-  const clipCanvas = document.createElement("canvas");
-  const clipCtx = clipCanvas.getContext("2d")!;
-  const canvas = document.createElement("canvas");
-  const ctx = canvas.getContext("2d")!;
-  let cx = square.cx;
-  let cy = square.cy;
-  let cxMax = cx;
-  let cyMax = cy;
-  let cWidth = 0;
-  let cHeight = 0;
-
-  for (const s of square.lines) {
-    cx = s.dx < cx ? s.dx : cx;
-    cy = s.dy < cy ? s.dy : cy;
-    cxMax = s.dx > cxMax ? s.dx : cxMax;
-    cyMax = s.dy > cyMax ? s.dy : cyMax;
-  }
-  cWidth = cxMax - cx;
-  cHeight = cyMax - cy;
-
-  clipCanvas.width = img.naturalWidth;
-  clipCanvas.height = img.naturalHeight;
-  clipCtx.save();
-
-  clipCtx.beginPath();
-  clipCtx.moveTo(square.cx, square.cy);
-  for (const l of square.lines) {
-    clipCtx.lineTo(l.dx, l.dy);
-  }
-  clipCtx.closePath();
-  clipCtx.stroke();
-  clipCtx.clip();
-  clipCtx.drawImage(img, 0, 0);
-  clipCtx.restore();
-
-  canvas.width = cWidth;
-  canvas.height = cHeight;
-  ctx.drawImage(clipCanvas, cx, cy, cWidth, cHeight, 0, 0, cWidth, cHeight);
-
-  const imgEl = new Image();
-  imgEl.src = canvas.toDataURL();
-  return imgEl;
 };
 
 export const getCopyImg = (img: HTMLImageElement) => {

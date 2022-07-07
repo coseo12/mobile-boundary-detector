@@ -7,6 +7,7 @@ import {
   getDetectCirclePath,
   drawPath,
   drawDetectLines,
+  getRotateSqure,
 } from "@/utils";
 
 let IS_CIRCLE_RESIZE = false;
@@ -37,6 +38,7 @@ const setCtx = async () => {
   ) {
     return;
   }
+
   const rectImg = imgEl.value.getBoundingClientRect();
   const width = rectImg.width;
   const height = rectImg.height;
@@ -75,14 +77,12 @@ const setCtx = async () => {
 
   canvas.value.width = width;
   canvas.value.height = height;
-
   drawDetectLines(ctx.value, square.value, { xRatio, yRatio });
   ctx.value.save();
   ctx.value.globalAlpha = 0.3;
   ctx.value.fillStyle = "#f34a00";
   ctx.value.fill();
   ctx.value.restore();
-
   drawPath(ctx.value, circle);
   drawPath(ctx.value, fits, "line");
 
@@ -234,6 +234,7 @@ onMounted(async () => {
   }
   ctx.value = canvas.value.getContext("2d");
   square.value = JSON.parse(JSON.stringify(current.value.square));
+
   const cloneImg = current.value.img.cloneNode(true) as HTMLImageElement;
 
   imgEl.value.src = cloneImg.src;
