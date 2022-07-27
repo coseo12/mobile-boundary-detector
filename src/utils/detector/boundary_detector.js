@@ -21,7 +21,7 @@ export async function detect(img, model) {
 
   let square = [];
   try {
-    if (WebAssembly) {
+    if (WebAssembly && !window.navigator.userAgent.includes("NAVER")) {
       // console.log("Running WebAssembly 💻");
       square = await pred_squares(pyodide, pts, pts_score, vmap);
     } else {
