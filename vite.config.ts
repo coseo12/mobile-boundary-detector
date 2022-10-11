@@ -1,10 +1,12 @@
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
+import { obfuscator } from "rollup-obfuscator";
+
 const path = require("path");
 
 // https://vitejs.dev/config/
 export default defineConfig(({ command, mode }) => ({
-  plugins: [vue()],
+  plugins: [vue(), obfuscator()],
   server: {
     host: "0.0.0.0",
     port: 3000,
