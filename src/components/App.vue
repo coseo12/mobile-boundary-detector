@@ -24,8 +24,6 @@ const onLoadedModel = async () => {
       id: "test1",
     },
   });
-
-  // await store.setDocuments();
 };
 onLoadedModel();
 

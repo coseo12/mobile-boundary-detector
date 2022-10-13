@@ -1,6 +1,6 @@
 <script setup lang="ts">
-// import Logo from "@/assets/logo/lomin_horizontal_w1.png";
-import Logo from "@/assets/logo/logo1.png";
+import Logo from "@/assets/logo/lomin_horizontal_w1.png";
+// import Logo from "@/assets/logo/logo1.png";
 </script>
 
 <template>
